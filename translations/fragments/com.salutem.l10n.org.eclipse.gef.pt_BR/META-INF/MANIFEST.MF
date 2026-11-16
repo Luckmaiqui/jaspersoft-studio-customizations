@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Salutem pt_BR - org.eclipse.gef
+Bundle-SymbolicName: com.salutem.l10n.org.eclipse.gef.pt_BR;singleton:
+ =true
+Bundle-Version: 2.0.0
+Fragment-Host: org.eclipse.gef;bundle-version="[3.14.0.202306071707,3.
+ 14.0.202306071707]"
+Bundle-Localization: plugin
+
+

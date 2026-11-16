@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Salutem pt_BR - net.sf.jasperreports.samples
+Bundle-SymbolicName: com.salutem.l10n.net.sf.jasperreports.samples.pt_
+ BR;singleton:=true
+Bundle-Version: 2.0.0
+Fragment-Host: net.sf.jasperreports.samples;bundle-version="[6.20.6.fi
+ nal,6.20.6.final]"
+Bundle-Localization: plugin
+
+

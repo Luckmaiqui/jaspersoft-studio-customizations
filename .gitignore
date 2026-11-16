@@ -1,0 +1,14 @@
+build/
+dist/
+*.log
+*.tmp
+.env
+.env.*
+!.env.example
+*.jrdax
+*.jrxml
+*.jasper
+*.jrprint
+.metadata/
+*.keystore
+*.p12

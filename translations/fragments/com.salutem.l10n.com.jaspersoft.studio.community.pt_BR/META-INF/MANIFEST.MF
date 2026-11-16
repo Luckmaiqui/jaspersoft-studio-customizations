@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Salutem pt_BR - com.jaspersoft.studio.community
+Bundle-SymbolicName: com.salutem.l10n.com.jaspersoft.studio.community.
+ pt_BR;singleton:=true
+Bundle-Version: 2.0.0
+Fragment-Host: com.jaspersoft.studio.community;bundle-version="[6.20.6
+ .final,6.20.6.final]"
+Bundle-Localization: plugin
+
+

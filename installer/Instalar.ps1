@@ -1,0 +1,113 @@
+﻿#Requires -Version 5.1
+[CmdletBinding()]
+param([string]$StudioPath,[switch]$Elevated,[switch]$ValidateOnly,[switch]$Launch)
+$ErrorActionPreference='Stop'
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+function Read-Manifest([string]$BundlePath){
+    if(Test-Path -LiteralPath $BundlePath -PathType Container){$text=[IO.File]::ReadAllText((Join-Path $BundlePath 'META-INF\MANIFEST.MF'))}
+    else{$zip=[IO.Compression.ZipFile]::OpenRead($BundlePath);try{$reader=New-Object IO.StreamReader($zip.GetEntry('META-INF/MANIFEST.MF').Open());try{$text=$reader.ReadToEnd()}finally{$reader.Dispose()}}finally{$zip.Dispose()}}
+    $text=$text -replace "\r?\n ",''
+    $result=@{}
+    foreach($line in ($text -split '\r?\n')){if($line -match '^([^:]+): (.*)$'){$result[$matches[1]]=$matches[2]}}
+    return $result
+}
+function Find-Studios {
+    $found=New-Object 'System.Collections.Generic.List[string]'
+    $roots=@($env:ProgramFiles,${env:ProgramFiles(x86)},(Join-Path $env:LOCALAPPDATA 'Programs'))
+    foreach($root in $roots){if($root -and (Test-Path -LiteralPath $root)){
+        $dirs=@(Get-ChildItem -LiteralPath $root -Directory -ErrorAction SilentlyContinue|Where-Object{$_.Name -match 'Jaspersoft|JasperStudio'})
+        foreach($dir in $dirs){$candidates=@($dir.FullName)+@(Get-ChildItem -LiteralPath $dir.FullName -Directory -ErrorAction SilentlyContinue|ForEach-Object{$_.FullName});foreach($candidate in $candidates){if(Test-Path -LiteralPath (Join-Path $candidate 'Jaspersoft Studio.ini')){if(-not $found.Contains($candidate)){$found.Add($candidate)}}}}
+    }}
+    return @($found.ToArray())
+}
+function Choose-Studio {
+    Add-Type -AssemblyName System.Windows.Forms
+    $candidates=@(Find-Studios)
+    if($candidates.Count -eq 1){return $candidates[0]}
+    $dialog=New-Object Windows.Forms.FolderBrowserDialog
+    $dialog.Description='Selecione a pasta do Jaspersoft Studio 6.20.6 (a que contém plugins e Jaspersoft Studio.ini).'
+    $dialog.ShowNewFolderButton=$false
+    if($candidates.Count -gt 0){$dialog.SelectedPath=$candidates[0]}
+    try{if($dialog.ShowDialog() -ne [Windows.Forms.DialogResult]::OK){throw 'Seleção cancelada.'};return $dialog.SelectedPath}finally{$dialog.Dispose()}
+}
+function Get-JavaMajor([string]$Root){
+    $lines=Get-Content -LiteralPath (Join-Path $Root 'Jaspersoft Studio.ini')
+    $vm=$null
+    for($i=0;$i -lt $lines.Count-1;$i++){if($lines[$i].Trim() -eq '-vm'){$vm=$lines[$i+1].Trim().Trim('"');break}}
+    if($vm){
+        $vm=[Environment]::ExpandEnvironmentVariables($vm)
+        if(-not [IO.Path]::IsPathRooted($vm)){$vm=Join-Path $Root $vm}
+        $item=Get-Item -LiteralPath $vm -ErrorAction SilentlyContinue
+        if($item){if($item.PSIsContainer){$dir=$item.FullName}else{$dir=$item.DirectoryName};for($i=0;$i -lt 5 -and $dir;$i++){$release=Join-Path $dir 'release';if(Test-Path -LiteralPath $release){$text=Get-Content -LiteralPath $release -Raw;if($text -match 'JAVA_VERSION="(\d+)'){$major=[int]$matches[1];if($major -eq 1 -and $text -match 'JAVA_VERSION="1\.(\d+)'){$major=[int]$matches[1]};return $major}};$dir=Split-Path -Parent $dir}}
+    } else {
+        $java=Get-Command java.exe -ErrorAction SilentlyContinue
+        if($java){$text=(& $java.Source -version 2>&1|Out-String);if($text -match 'version "(\d+)'){return [int]$matches[1]}}
+    }
+    throw 'Não foi possível confirmar o Java usado por esta instalação. Este pacote exige Java 17 ou superior.'
+}
+function Get-Plan([string]$Root){
+    $rootFull=(Resolve-Path -LiteralPath $Root).Path
+    $plugins=Join-Path $rootFull 'plugins'
+    if(-not(Test-Path -LiteralPath (Join-Path $rootFull 'Jaspersoft Studio.ini')) -or -not(Test-Path -LiteralPath $plugins)){throw 'Pasta inválida. Selecione a pasta que contém plugins e Jaspersoft Studio.ini.'}
+    $hostBundles=@{}
+    foreach($bundle in Get-ChildItem -LiteralPath $plugins){if($bundle.Name -match '^(com\.jaspersoft\.|org\.eclipse\.|net\.sf\.jasperreports)'){
+        try{$mf=Read-Manifest $bundle.FullName;$id=($mf['Bundle-SymbolicName'] -split ';')[0];if($id){$hostBundles[$id]=$mf['Bundle-Version']}}catch{ }
+    }}
+    $version=$hostBundles['com.jaspersoft.studio']
+    if($version -ne '6.20.6.final'){throw "Versão encontrada: $version. Este pacote foi preparado para o Studio 6.20.6. Não é compatível diretamente com 6.16 ou outras versões."}
+    $javaMajor=Get-JavaMajor $rootFull
+    if($javaMajor -lt 17){throw "Java encontrado: $javaMajor. Os complementos deste pacote exigem Java 17 ou superior."}
+    $manifest=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'pacote\arquivos.json') -Raw|ConvertFrom-Json
+    $files=New-Object 'System.Collections.Generic.List[object]';$skipped=New-Object 'System.Collections.Generic.List[string]'
+    foreach($entry in $manifest){
+        $source=Join-Path (Join-Path $PSScriptRoot 'pacote\plugins') $entry.name
+        if((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -ne $entry.sha256){throw "Arquivo ausente ou alterado no pacote: $($entry.name)"}
+        $mf=Read-Manifest $source;$fragment=$mf['Fragment-Host']
+        if($fragment){$hostId=($fragment -split ';')[0];if(-not $hostBundles.ContainsKey($hostId)){$skipped.Add($entry.name);continue}
+            if($fragment -match 'bundle-version="\[([^,]+),([^\]]+)\]"'){if($hostBundles[$hostId] -ne $matches[1]){throw "Módulo incompatível: $hostId. Encontrado: $($hostBundles[$hostId]); esperado: $($matches[1])."}}
+        }
+        $files.Add([pscustomobject]@{Source=$source;Name=$entry.name;Hash=$entry.sha256})
+    }
+    return [pscustomobject]@{Root=$rootFull;Version=$version;Java=$javaMajor;Files=$files.ToArray();Skipped=$skipped.ToArray()}
+}
+
+try {
+    if(-not $StudioPath){if($ValidateOnly){throw 'Informe -StudioPath para validar sem interface.'};$StudioPath=Choose-Studio}
+    $plan=Get-Plan $StudioPath
+    if($ValidateOnly){$plan|Select-Object Root,Version,Java,@{n='Plugins';e={$_.Files.Count}},@{n='OpcionaisAusentes';e={$_.Skipped.Count}};exit 0}
+    if($Launch){
+        $exe=Join-Path $plan.Root 'Jaspersoft Studio.exe'
+        if(-not(Test-Path -LiteralPath $exe)){throw 'Executável Jaspersoft Studio.exe não encontrado.'}
+        Start-Process -FilePath $exe -ArgumentList @('-clean','-nl','pt_BR','-pluginCustomization',('"'+(Join-Path $PSScriptRoot 'padroes.ini')+'"'))
+        exit 0
+    }
+    $principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+    if(-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){
+        $argsList=@('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$PSCommandPath+'"'),'-StudioPath',('"'+$plan.Root+'"'),'-Elevated')
+        $child=Start-Process -FilePath 'powershell.exe' -Verb RunAs -WindowStyle Hidden -ArgumentList $argsList -Wait -PassThru
+        exit $child.ExitCode
+    }
+    $running=@(Get-Process -ErrorAction SilentlyContinue|Where-Object{$_.ProcessName -like '*Jaspersoft*' -and $_.Path -and $_.Path.StartsWith($plan.Root,[StringComparison]::OrdinalIgnoreCase)})
+    if($running.Count){throw 'Salve os relatórios e feche esta instalação do Jaspersoft Studio antes de instalar.'}
+    $target=Join-Path $plan.Root 'dropins\eclipse\plugins'
+    foreach($file in $plan.Files){$dest=Join-Path $target $file.Name;if(Test-Path -LiteralPath $dest){if((Get-FileHash -LiteralPath $dest -Algorithm SHA256).Hash -ne $file.Hash){throw "Já existe um arquivo diferente: $dest. Nenhum arquivo foi substituído."}}}
+    New-Item -ItemType Directory -Force -Path $target|Out-Null
+    $added=New-Object 'System.Collections.Generic.List[string]'
+    try {
+        foreach($file in $plan.Files){$dest=Join-Path $target $file.Name;if(-not(Test-Path -LiteralPath $dest)){Copy-Item -LiteralPath $file.Source -Destination $dest;$added.Add($dest)};if((Get-FileHash -LiteralPath $dest -Algorithm SHA256).Hash -ne $file.Hash){throw "Falha de cópia: $($file.Name)"}}
+    }catch{
+        foreach($created in $added){if([IO.Path]::GetDirectoryName($created) -eq $target){Remove-Item -LiteralPath $created -Force}}
+        throw
+    }
+    $report=@('Instalação concluída.',('Pasta: '+$plan.Root),('Versão: '+$plan.Version),('Java: '+$plan.Java),('Complementos conferidos: '+$plan.Files.Count),('Módulos opcionais ausentes: '+$plan.Skipped.Count),('Arquivos adicionados: '+$added.Count),('Data: '+(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')))
+    try{$report|Set-Content -LiteralPath (Join-Path $PSScriptRoot 'instalacao.log') -Encoding UTF8}catch{ }
+    Add-Type -AssemblyName System.Windows.Forms
+    [Windows.Forms.MessageBox]::Show("Instalação concluída.`r`n`r`nAbra pelo arquivo Abrir JS.bat.`r`nEm uma área de trabalho já existente, selecione o tema Salutem Noite em Janela > Preferências > Gerais > Aparência.",'Tradução e Tema JS','OK','Information')|Out-Null
+    exit 0
+} catch {
+    if($ValidateOnly){Write-Error $_;exit 1}
+    Add-Type -AssemblyName System.Windows.Forms
+    [Windows.Forms.MessageBox]::Show($_.Exception.Message,'Tradução e Tema JS','OK','Error')|Out-Null
+    exit 1
+}

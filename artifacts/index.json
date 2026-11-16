@@ -1,0 +1,627 @@
+{
+  "schema": 1,
+  "versions": {
+    "packageVersion": "1.0.0",
+    "studioVersion": "6.20.6.final",
+    "javaMinimum": 17,
+    "theme": "1.7.5",
+    "language": "2.0.2",
+    "connectionOrder": "1.0.0",
+    "translationFragments": "2.0.0"
+  },
+  "sourceDigest": "5b5f2d80e868bc7f904cb9989425a321e03963c6bb556abec2456ddf348d2db3",
+  "files": [
+    {
+      "path": "artifacts/plugins/com.salutem.jasper.connectionorder_1.0.0.jar",
+      "sha256": "76131a48ead35708a50d155e5e86d47d1e22dd5ef38eaf0d3473cd6a144d661d"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.jasper.language.pt_BR_2.0.2.jar",
+      "sha256": "1297c643ffdbbdadbaa3c1442521fb8eba28720add7c858a2147b866d32b6c8d"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.jasper.theme.deepblue_1.7.5.jar",
+      "sha256": "27c7a7f865fe33c735f92527285cd6e06c225a8aea1a41c28064b0f9189f84a5"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.babel.editor.pt_BR_2.0.0.jar",
+      "sha256": "21aa32aa5c430b7b9e1548738774ffc893bfcca6d84324abc062fef3f76d95f4"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.book.pt_BR_2.0.0.jar",
+      "sha256": "56eb31e6683f0b29c8f247cce17e25fbf42f65415cbc470cc5b306d02e790acb"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.community.pt_BR_2.0.0.jar",
+      "sha256": "cfbf49b902729f9882cf0b3d1aa7ab3407b1211d6a2d27d565c19183c2bbabe5"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.components.customvisualization.pt_BR_2.0.0.jar",
+      "sha256": "4b4f2a1a0af55e72657a43879ee4277ffcdf2fc6c5a5086606a29909ca4b1462"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.components.pt_BR_2.0.0.jar",
+      "sha256": "6fda48cded26c9e78eabc4d82895b9b1ff00b8968b2c4cc1f15187cc745d5d2e"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.data.mongodb.pt_BR_2.0.0.jar",
+      "sha256": "e8374e5956f4e1e266b44bf4a2dc62ecfc8836fc4d8d64f1aa75f086aa207ee5"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.data.pt_BR_2.0.0.jar",
+      "sha256": "19817654c10ce8ec2c85372ce646e039ea7d7c097606f4d9c9e626727177b84d"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.data.sql.ui.pt_BR_2.0.0.jar",
+      "sha256": "1671fa3a67a8425f642fe96f36f8fd8a5ce54d2afa0f60fc2c2ebec1cf3c9344"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.doc.pt_BR_2.0.0.jar",
+      "sha256": "d009365fb9f8aacc4138b73c274de9482fbb9227cb68e0b8e13a8579a0ad4d3e"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.doc.samples.pt_BR_2.0.0.jar",
+      "sha256": "2272c26b871c9a7ff0774fa3e9d52458cd5901f849d12d59f6b65b1849fe1031"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.editor.jrexpressions.pt_BR_2.0.0.jar",
+      "sha256": "0f3db091095ceddcd3f4092b3c2e5016222ba844b4b7983de0e59822275a3419"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.editor.jrexpressions.ui.pt_BR_2.0.0.jar",
+      "sha256": "ab53799923ac8ee7a3eaff980647c6c3ddf498828a233244d097bc784694b1d5"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.hibernate.pt_BR_2.0.0.jar",
+      "sha256": "ba2db533df02404db12235609f7e8bc8971af58d72f4dbe2844fa46f3ac9768e"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.html.pt_BR_2.0.0.jar",
+      "sha256": "ee5a195a6c25053e0311b55dbe17083b882a9cd5206f51db973aa838d1eb1bc2"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.properties.pt_BR_2.0.0.jar",
+      "sha256": "f19bf9601bdff3626076a2ea834d29961fb6b8eeb771f1fc1315ed8380371010"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.pt_BR_2.0.0.jar",
+      "sha256": "40debf2fe767d1efa8dd0ed07c22b7c2e5d35830f1cfb3c56ccf554d5582c18c"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.rcp.pt_BR_2.0.0.jar",
+      "sha256": "abaac0f3a53dd6c0e0c8f21fe03a56290c9e0eec13277215f534b665ad5ddd5f"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.server.pt_BR_2.0.0.jar",
+      "sha256": "9604cbde1d44bec315d848f9a85e0bf5f9b5981c69ed1c934b1a98f61fa9c4e9"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.server.soap.pt_BR_2.0.0.jar",
+      "sha256": "e461e27e899949c882a4225ee0bdddb6b33c15d99f62fe1e24daa18807f0c3f4"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.svgimporter.pt_BR_2.0.0.jar",
+      "sha256": "97716be3f31a07af8c28c7f7a6a40cc23b9ec5e326572d439a356082d32807ba"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.widgets.map.pt_BR_2.0.0.jar",
+      "sha256": "ae49a030a6725e807bd09994743af1f40f1445c7fc8d7d84f9188979a4657902"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.net.sf.jasperreports.pt_BR_2.0.0.jar",
+      "sha256": "11042ff51433e66e09e3ab655ee0b50f04de292b075513c25b28b64b62ed2234"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.net.sf.jasperreports.samples.pt_BR_2.0.0.jar",
+      "sha256": "57ac78dc974aa3d449cbe55555d46eb0eef6b5f799336c6bfe9e20b44b753cbe"
+    },
+    {
+      "path": "artifacts/plugins/com.salutem.l10n.org.eclipse.gef.pt_BR_2.0.0.jar",
+      "sha256": "7e7e6d4dede72ec403078c6821a7b154a5f3df02095aa06eb043a802793c3296"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ant.core.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "e4b2e840a8adc8fa007c6dde9f782604791686462df1d4c53f7f9aa915100eee"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ant.launching.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "c1d8b9bdd94eb39d49882506ad381905d3b72d00b751e661de8fda9d4beb4f33"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ant.ui.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "1583ba088e78d357a58f09b42eaee0a0dc83021d154a43d4fb0d126fe1f4ebd1"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.compare.core.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "552ae09a3b86adec72b051086fb13fafc4668d2588342ecba4bdf5f8a8b91275"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.compare.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "42553090613c41e665a9026995424d4f7fe9526af479a6ec28162dc0629de35a"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.commands.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "dc8efd3106ae47a4321fb455824552a0f5d18ae6faf7ba8ac32b0e19f51d5d26"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.contenttype.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "cdfd1ce76e757d86ae7fcd5ea25917072cd71b6a8af74d3fb9c3b46c52dd9bff"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.databinding.beans.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "c864ed1f238a5fbfa6ece9de0de8e7ff8f7c6be2fe807a22643380f3e1f24fc7"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.databinding.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "21a8a48840b91612d428025809827138f89bbdbb64dee40be75326807d616a0a"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.databinding.observable.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "f27b9d53d20a92b2a20ba26a91e272278e2fbefb60aa7114a526d81b40ad927d"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.databinding.property.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "fb1c6256369cf9ee215d7f2e11059d8f0ce5728a4cbff2a7380f56f657fd9ca2"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.expressions.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "ab795d78aac896f22f35d5f702d8f799b3e6277f78ca69524774240e40176242"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.externaltools.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "1e5789e130ca19325b4964b7feb37a86a50d5e5fdcf2851b728eacf928ea2fdc"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.filebuffers.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "c5e759071e234583e7078da6fcad501a99956614cee5705948096024f74c5e6e"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.filesystem.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "cff7072ade653a77f9ac0ca615c5c4cfb9fb80482d30a8f507d160fee60d64b0"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.jobs.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "82121b71b46d8a40428c0c8639e552656deb8007e3b3ea900ca2371d087d9e92"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.net.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "2809666b8aae692030f62a54faf8ad62ca512b2a8032196f5ba5d85b9a9b61ff"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.resources.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "7d8bbb3e2777f520f230265b9c29b5f221d97e996bd26b87c4bcd2d46117f56b"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.runtime.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "207a46e790af0784037899043e9c1d20aed394300eefd969d95be405cdb6e42f"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.core.variables.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "a0571968f1a1b2d323a41d0144de98bb82146db8e86396cd114e7c5d8dc44c70"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.debug.core.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "ffeb18a6912bf21d610fea9d7605bcb982058fd7780a9649c40a91af94e1f519"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.debug.ui.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "84916fdaf2e3b5e1d7df9043faf36e85e2ceb477dc4cf5eee19cd324c3f45866"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.core.commands.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "920a8669624cbb7c850378b651adfbdb2b85fcc2fbb5c7a174f44d9d7c824c51"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.core.contexts.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "387e400fd2ae893a47f11255201910ed52c79cff2aceb8d0a28200f23b08ce1a"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.core.di.annotations.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "49c861673b3cd53e62fda82c5648e8bff2f2827cf7b4ebb1987580dea8fe8110"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.core.di.extensions.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "4263226b6d9aa777460c0c8034bee1e2ba4fa0102f97c2fa4038f3900c24d5a0"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.core.di.extensions.supplier.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "7d4e27df5b26296461c667aad4d38b950d5db2a9be0204bdb7faea521a95ee90"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.core.di.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "9922f8002908def8b02cc8719d99efe61ec1c827714937702b1ca5226376264d"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.core.services.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "8cdeb1b702b2638d3e4e9e0e89c097abd1eb72aa9f845723381d32b18fbc3af4"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.emf.xpath.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "0fb20d30bba555f3a8bfe906a7cfce02882bb7e1b2fc4e9eaeb7d20504ac6e80"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.bindings.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "937c370207b9bea12130c39cb067c2916abde116ae3a1e66f2d75295e02cf323"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.css.core.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "79e9c1549166b5cc30a183f831e19477b6e4b4a0ced6a382e1b6f0b344edf28f"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.css.swt.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "267063c3a750cff4cffc76f3f1a20b12c9637c722cb1ec3f95d0d06491cc14fe"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.css.swt.theme.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "04a90299daf8636d07523bed2b09ff7474c0268a4edf4ae29596d4b38ec79678"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.di.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "e45ff5d64dd8da084aae63c32779504f5bba4de8675a90763fe5e416a0bce036"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.dialogs.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "098c58e884d5303185b8cc37e11d3495d323b7a3748ced027bf7c6d0556e3b6e"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.ide.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "44705acdc59a9076fb3eaa3c702c837b375df31410e369a6cb8e3b973eac6625"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.model.workbench.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "821d7872b1c2d2f6d975cc7a8e0dec21d0144d06e21ce22d43979e241b5e8b94"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.progress.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "ffe2d6f89e8a13586b7c43ddb91191e4c6b44768fe509757f82ebecf6e585fdf"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.services.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "8dbc8129434c9cd7d90a3ba6b44925da417dba33454249f43a149341833f3992"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.swt.win32.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "01d7924e5a123bdc62cd7b6668520928add64f8811dbfdd5bbe4972be9fb7a09"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.widgets.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "a5190f13cdc9ee64771abbae0b202e60fe7a2e793f1449932d29b4a218cdfa14"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.workbench.addons.swt.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "b41214f5c19ab982db15389e91b55ae766d4ea2921f10b6927319f8ac47dd80b"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.workbench.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "ce2505d12ba325d444800cc4bd7d183dc1cfccca0632a63ab109c33551c4f216"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.workbench.renderers.swt.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "8c16c8754ebd514db254abe73d074a4df15a87594436304dfb499e4c2917b68c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.workbench.swt.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "735f78d0b55c76ce0fa75e459cf7fe925c27edf236608d0c4cb03233ca671f25"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.e4.ui.workbench3.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "10019b30358d59951f55e4d8b36206b446554c4af993b0a049247c0d3d52275f"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.frameworkadmin.equinox.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "e6c15f8008025e6372ab59abff6178185f84d46a06fd499a07db4124d8e04a30"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.frameworkadmin.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "9c785c0c254cd95e6d39b37bad411e184e750fdd1f1c1dedeffe8d70c04190cd"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.artifact.repository.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "02b33904f289998249025aa0d124aece390f524469afd065c7a3c30b0516547d"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.console.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "1cb7ce119ac9e2ac580879ef465138c461779ba11865503e3957b9756f0937af"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.core.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "a03a85da7c5ed3bbd7d1ce8a8d2088278d3ff58b89be2af34fde7f80b337a641"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.director.app.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "0e6a2b8c04ab2632dca9b2d0ceafb190da042a4bb476707ef08326b46f37ce2c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.director.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "4511a3eea2e37c40614adaa0ea665ee917900a321419b90a17315456973b3fe2"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.directorywatcher.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "59049a567134a41c11f309b1a67b8fdf33b0e6e83c5f997e377aff7b721fef55"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.engine.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "0866643d476fff336cbae07ddb5af9d9871e06fee431218c3b25def414031701"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.extensionlocation.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "dd4b0dda9e2912085026bc3f4ca1c66fe42de27fcc7820dc3af26ea065a24d00"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.garbagecollector.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "832d9f04dcc6d681e1304e24e4b4c172258b1edc11aa9e29d4f8411a7c4ee03e"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.jarprocessor.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "da73be8d5263017ae72377a94d53c41feb89486ecdd85fcea64a8d75052e089a"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.metadata.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "46f03f563442ba8cbd1b2504914c5728562046b70f10ee47c3df82a1df20a8c4"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.metadata.repository.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "85ce636190d538e30213b627241ec2441c7a23627c4e1ed23ad4baa192f7668a"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.operations.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "b10929850ea9fa3d7275dc038fb32358673240c1cf83832114970fb3c8487aa1"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.publisher.eclipse.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "b7e7a9bee55254dabd8314566904687136ce0976767195cf8bda9bc52892bec3"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.publisher.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "703da21dce2c29aa4a8e08427364cc14f5b53db7630efb99fce64bcf043ce60e"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.reconciler.dropins.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "f666c0aa60f58a41ef992c5c482ec165f6f4064b420bc0e08e32bacee5d8113c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.repository.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "1ace7f51b47fda143a0a9ab7c2848956dcfce527712995ae73d7c5221763e21f"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.repository.tools.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "48f50bf076e08feb92fd229b12935ef9d94715d9e6a2711d841bbe801e02d475"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.touchpoint.eclipse.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "39bc0fa839dc740ae23bbe875e7b8a3e615ed32e11a9d70c1fd6fbab0ed88b4c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.touchpoint.natives.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "5fcb43813f8b1f35537268048540f55b9c91a287c201360e8d3e6d1f38833141"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.transport.ecf.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "71964178d0ed1eba1797cf1424c4530c914d8da241a28eaf406bbd5320d6479e"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.ui.importexport.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "058f864338bee23889e5a883874719f20b712324a43dc6be9b823022fce5e51c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.ui.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "68cd92a650cb72095338e9a90378472eab841c3e6d9553e88a834933b2bf0d2c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.ui.sdk.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "9488b12b6d63803b766fbbe45600bceca951956ae87a8edc4a6770b4bcf6653c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.ui.sdk.scheduler.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "80928e626b9d1efc5c35934d274811ec3faf0c1e6cacdcdc73791b4d3b81e5ee"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.updatechecker.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "4a6bf2ed6c7ee820e5f44170884c9e5b5fd7980860d9326ade7a67dd422a2178"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.p2.updatesite.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "1edc505ca9514a7b5e89969ab0773beec3ef6d0efe5633f3f57910f5b1191051"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.simpleconfigurator.manipulator.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "5e5b1f5eb59410e28f2148403fd67b07d414a9a3ca8807c1272e57be3b5f1ee7"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.equinox.simpleconfigurator.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "500a55cb0795fda9698d0812e566f0adb447f0e256c0960d83aec260a8313fe0"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.help.base.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "e834e71d7393064f5244c135db3db471b5c5cf4c02630be50e9add7bf9d110b3"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.help.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "179fa05f3f0eca40abb25b29b20613d8626e891b98c40f3ac8162c4561bdec2c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.help.ui.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "a74ee480eeb736df82a41ab423a37fa03b487afb8abc3f48cc6b8bf73ce8558b"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.help.webapp.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "3ad3c9215052bd24c1b8f4491ddf8c882a01f810e171f3ac1f861621e989dbca"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jdt.core.manipulation.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "13fecf4844559c37a46b416a6e7ac0ed56feea741b699f0ee69434c8acc547c5"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jdt.core.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "820f98383d66d7c02555db42d3a20478dce113c81afe8d028fbd0ba647e39abf"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jdt.debug.ui.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "599ec26d735def325d1444ca0f0f441e4bbc055c7b37dbec256fdd7bcd920595"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jdt.doc.user.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "71246025a63132442ec418442bac32e5170406e0d876ea51d9b145dfe32a4650"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jdt.junit.core.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "53de9213a2fffefbef8b40473f7e37299ed46729785b5b3332ebd713aee259de"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jdt.junit.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "d94f4002de97f4920808bc7a58ebae2e0aa4f215aeff41903042012c913f02ad"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jdt.junit.runtime.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "b94a8034c0b156982b1283bc9fae2f57972336e9e256b1ca1f320fa70d515402"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jdt.launching.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "125e05d0cb2f3a548f5fe636eeea6f9a6736744bc9bae9cac9002e46aefa7a34"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jdt.ui.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "89d07cbe7d53a4ecf1306bb321db7be426b5f593b5ed2c354cc136cf91eefe93"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jface.databinding.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "29aec59eebe9577395fe3e0970c10692da7369094bc7881731f796370be3f278"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jface.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "62d03d61a078983e66b701e2324e37fd0d733fc4c36708d857f9224a25e5a485"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jface.notifications.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "795ec59ad3950c34ffca4b4a9ded747e0d29ebd06909482726e962382dcb515d"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.jface.text.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "e6dc2aac0ec40870e091d3b78ebdf072782e3e60cf293d4c1c59659b91ff7af6"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ltk.core.refactoring.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "1346757466e5bbba4246d91c6857ab61e0e8a411f53d2441d57c9e84e5720aaa"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ltk.ui.refactoring.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "1dd4d4e4636d290069a125aa0f7c1aa50817da8d9732dea799e862ff1bfb6aa9"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.pde.core.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "4945a36b50a3d83a148191646c614db60793a7ec0e846966db7623048b9a9d22"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.pde.launching.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "a63538f1cd1a787b0604afdb3e8d45672ca489c9ba932422067766fefbe7f9ca"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.pde.ui.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "13f98e66cdbfcb1b1720dd6f3effee7a963dd006e33f8743cc726030ea6dcbed"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.platform.doc.user.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "0216d235be4e4c2784b3fd7470422f487ec79128e5f78b50190fdf1b2ff1f1ea"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.search.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "5854765dd9df649b3123bb96a49c3c23e29d10f5714bed9c55d1cfb2ec8b6f4c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.swt.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "fe136365f54b91a3922dc4e594f940db64e8b4d61a574600607cab9a3d1e587b"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.team.core.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "fa23abe9d6d72dd49817dde0d1b05808ba92802258fb6cbd7d2f9949faee938c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.team.ui.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "905c10517525ae81a780a5416abe78243be2106a24aa9f9143dc6117f3ff6c5e"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.text.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "d814030125abc61d055d240dcb0cdada3094838d5ceb195141f2314fae377133"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.browser.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "2c5da646b804efa2f2e6b8f575bf4fd76265afa8ef50a75146c3ff0ff3b86832"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.cheatsheets.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "ab6a79b0210ada68213f39e7b0d673ed5e90b5e22381863920f5163e656b2980"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.console.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "4331a10ef5b549b1ae343ed92e09fdf7730302a823090e61829a504c23de0be9"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.editors.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "52c553c8569ef3f0998409ef336d10fad4387da2c7ebe5a074679fdaafcb4950"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.externaltools.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "2e73817cab01810a9a37c3e0833ab4c87a6cd69b97acdc31fa0568c9042a63ae"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.forms.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "38695ac85b42698a72cdff960866254aee28fd497b7bbe37cf3ac4d2fdb3ec0d"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.genericeditor.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "abc822c5d3d7c793c8e5ed1723ff8e1da4569bfa0d2b4cfa06d979dc7d935d2e"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.ide.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "5ce9c1d70de81953a7f19113df34f214a1f1941225efcd14bd4ddbcb6c33bdf5"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.intro.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "528853289b03dc1a57847f2a61b61d5c8c1e67a9943d7ad59c7809d6c52f6415"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.navigator.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "10d85987b89f378ca0725038d3038af2659a3ff473083e45929ab6d36b5f575c"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.navigator.resources.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "3ea38a720a3cc34c8e26ca327f4a765b86a483c18a60a19e06b693ef27131d4e"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.net.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "543a51961d6d4b16da15d3653f04f666c1827a3180aa176adb96b62bb9dac345"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "b72f47f5725cfb9d6c96d4574582497a74846cdb85e1441cbaf61010e8626b25"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.views.log.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "7aec0f53d2a79def88a3458c35a7ec1cf85d378ee8173c67a9f62ce0f93c2f04"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.views.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "eddbd62c64b879bfe923b3c4645ef9d583877f50087719a35612b1efe15b05df"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.views.properties.tabbed.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "954272d00ca5924a018503a3d62ce77c318fc50f44741eef36a62b07aa91f420"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.workbench.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "f1a54467de0e72919686c50da66c09bcbdf5c45921e319910b3ed018a1091595"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.ui.workbench.texteditor.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "3105762b30c32d508512f7ef00eddeb8b0564b33406a5f6dbb50066db34af45f"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.update.configurator.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "d6b984ac279c84e5b47c505e45a1bafe7c8a795910d7927171d503430827fdc3"
+    },
+    {
+      "path": "vendor/eclipse-babel/org.eclipse.urischeme.nl_pt_BR_4.26.0.v20230220105658.jar",
+      "sha256": "fac583cf109d5feed599752671469b3c416f31eac87385a445197e79939a8f3e"
+    }
+  ]
+}

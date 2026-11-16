@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Salutem pt_BR - com.jaspersoft.studio.editor.jrexpression
+ s.ui
+Bundle-SymbolicName: com.salutem.l10n.com.jaspersoft.studio.editor.jre
+ xpressions.ui.pt_BR;singleton:=true
+Bundle-Version: 2.0.0
+Fragment-Host: com.jaspersoft.studio.editor.jrexpressions.ui;bundle-ve
+ rsion="[6.20.6.final,6.20.6.final]"
+Bundle-Localization: plugin
+
+

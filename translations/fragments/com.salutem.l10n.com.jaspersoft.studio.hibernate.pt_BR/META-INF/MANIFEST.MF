@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Salutem pt_BR - com.jaspersoft.studio.hibernate
+Bundle-SymbolicName: com.salutem.l10n.com.jaspersoft.studio.hibernate.
+ pt_BR;singleton:=true
+Bundle-Version: 2.0.0
+Fragment-Host: com.jaspersoft.studio.hibernate;bundle-version="[5.4.24
+ .final,5.4.24.final]"
+Bundle-Localization: plugin
+
+

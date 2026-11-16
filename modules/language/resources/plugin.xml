@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+  <extension point="org.eclipse.ui.menus">
+    <menuContribution locationURI="menu:com.jaspersoft.studio.switchlanguage.menus?after=additions">
+      <command commandId="com.jaspersoft.studio.switchlanguage.command"
+               id="com.salutem.jasper.language.pt_BR.switchlanguage"
+               label="Português (Brasil)" icon="icons/br.png"
+               style="toggle">
+        <parameter name="com.jaspersoft.studio.switchlanguage.locale" value="pt_BR" />
+      </command>
+    </menuContribution>
+  </extension>
+  <extension point="org.eclipse.ui.startup"><startup class="com.salutem.l10n.Startup"/></extension>
+</plugin>
+
+
