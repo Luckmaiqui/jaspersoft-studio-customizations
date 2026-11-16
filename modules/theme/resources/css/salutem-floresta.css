@@ -1,0 +1,106 @@
+/* Salutem 2.0.0 — superfícies cinza-azuladas e contraste legível. */
+Shell, Composite, ScrolledComposite, Group, Canvas, FigureCanvas {
+    background-color: #202D29;
+    color: #E5F0EA;
+}
+.MTrimmedWindow, .MPartSashContainer, .MPart, .MPartStack, .MPartComposite,
+.MPlaceholder, .MWindow, .MWindowStack {
+    background-color: #202D29;
+    color: #E5F0EA;
+}
+#org-eclipse-ui-main-toolbar, .MTrimBar, .MToolBar, .MToolControl, ToolBar {
+    background-color: #18231F;
+    color: #E5F0EA;
+}
+.MPartTab { background-color: #202D29; color: #A8C2B6; }
+.MPartTab:selected { background-color: #2B3A33; color: #FFFFFF; }
+CTabFolder {
+    background-color: #202D29;
+    color: #E5F0EA;
+    swt-outer-keyline-color: #0D1B16;
+}
+CTabItem { background-color: #202D29; color: #A8C2B6; }
+CTabItem:selected { background-color: #2B3A33; color: #FFFFFF; }
+Sash, .Sash, .MPartSashContainer > Sash { background-color: #0D1B16; }
+Table, Tree, StyledText, Text, List, Combo, CCombo, Spinner {
+    background-color: #1B2623;
+    color: #E5F0EA;
+}
+TableItem:selected, TreeItem:selected, List:selected {
+    background-color: #3F6455;
+    color: #FFFFFF;
+}
+Label, CLabel {
+    background-color: #202D29;
+    color: #E5F0EA;
+}
+Label:disabled, CLabel:disabled {
+    background-color: #202D29;
+    color: #A8C2B6;
+}
+Group { background-color: #202D29; color: #E5F0EA; }
+Button, ToolItem, MenuItem {
+    background-color: #2B3A33;
+    color: #E5F0EA;
+}
+MenuBar, Menu { background-color: #18231F; color: #E5F0EA; }
+Link, a, .hyperlink { color: #81D8B2; }
+.MTrimBar .MToolItem:selected { background-color: #2B3A33; }
+
+/* Cabeçalhos e abas da página de propriedades. */
+TabbedPropertyTitle {
+ swt-backgroundGradientStart-color: #202D29;
+ swt-backgroundGradientEnd-color: #202D29;
+ swt-backgroundBottomKeyline1-color: #0D1B16;
+ swt-backgroundBottomKeyline2-color: #0D1B16;
+}
+TabbedPropertyTitle CLabel { background-color: #202D29; color: #E5F0EA; }
+TabbedPropertyList {
+ swt-tabNormalShadow-color: #0D1B16;
+ swt-tabDarkShadow-color: #0D1B16;
+ swt-tabAreaBackground-color: #202D29;
+ swt-tabBackground-color: #2B3A33;
+ color: #E5F0EA;
+}
+Button[style~='SWT.CHECK'], Button[style~='SWT.RADIO'] {
+ background-color: #202D29; color: #E5F0EA;
+}
+.MPartStack.active CTabFolder, .MPartStack CTabFolder, CTabFolder {
+ swt-outer-keyline-color: #0D1B16;
+ swt-inner-keyline-color: #0D1B16;
+ swt-tab-outline: #0D1B16;
+ swt-selected-tab-fill: #2B3A33;
+ swt-selected-tab-highlight: none;
+}
+SashForm, Sash, .MPartSashContainer, .MPartSashContainer > Sash { background-color: #0D1B16; }
+Text, Combo, CCombo, Tree, TreeItem { color: #E5F0EA; }
+
+
+/* Target only the properties view: headings, form sections and editors. */
+TabbedPropertyComposite, TabbedPropertyComposite Composite,
+TabbedPropertyComposite ScrolledComposite, TabbedPropertyComposite Section,
+TabbedPropertyComposite ExpandableComposite, TabbedPropertyComposite CLabel,
+TabbedPropertyComposite Label, TabbedPropertyComposite Combo,
+TabbedPropertyComposite CCombo {
+ background-color: #202D29; color: #E5F0EA;
+}
+TabbedPropertyComposite Section, TabbedPropertyComposite ExpandableComposite {
+ swt-titlebar-color: #E5F0EA;
+ swt-titlebar-background-color: #202D29;
+ swt-titlebar-gradient-color: #202D29;
+ swt-border-color: #0D1B16;
+}
+
+/* Uniform toolbar surfaces; highlight remains on selection/hover. */
+ToolBar, ToolBar ToolItem, CoolBar, .MToolBar, .MTrimBar ToolBar,
+.MPart ToolBar, .MPart .MToolBar, .MTrimBar .MToolBar {
+ background-color: #202D29; color: #E5F0EA;
+}
+Table { swt-lines-visible: false; swt-header-background-color: #202D29; swt-header-color: #E5F0EA; }
+Text[style~='SWT.PASSWORD'] { background-color: #202D29; color: #E5F0EA; }
+Menu, MenuItem, MenuBar { background-color: #202D29; color: #E5F0EA; }
+
+ToolItem, .MTrimBar .MToolItem { background-color: #202D29; color: #E5F0EA; }
+.MTrimBar .MToolItem:selected { background-color: #3F6455; }
+
+Scale, Slider { background-color: #202D29; color: #E5F0EA; }

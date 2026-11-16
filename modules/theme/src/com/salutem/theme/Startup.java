@@ -15,31 +15,34 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 
 /** Complements CSS only while Salutem Noite is selected. Never visits Draw2D report figures. */
 public final class Startup implements IStartup {
- private Color fg, bg, border, accent;
+ private Color fg, bg, border, accent, muted;
+ private String paletteId;
  private boolean initialized;
  public void earlyStartup() {
   Display d=Display.getDefault();
   d.asyncExec(new Runnable() { public void run() {
    if(d.isDisposed()) return;
-   boolean active="com.salutem.jasper.theme.deepblue".equals(InstanceScope.INSTANCE.getNode("org.eclipse.e4.ui.css.swt.theme").get("themeid", ""));
+   ThemePalette palette=ThemePalette.find(InstanceScope.INSTANCE.getNode("org.eclipse.e4.ui.css.swt.theme").get("themeid", ""));
+   boolean active=palette!=null;
    if(active) {
+    if(!palette.id.equals(paletteId))applyPalette(d,palette);
     if(!initialized) {
-     fg=new Color(d,230,233,244); bg=new Color(d,37,38,56); border=new Color(d,16,22,42);
+
      d.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", Boolean.TRUE);
      d.setData("org.eclipse.swt.internal.win32.menuBarForegroundColor", fg);
      d.setData("org.eclipse.swt.internal.win32.menuBarBackgroundColor", bg);
      d.setData("org.eclipse.swt.internal.win32.menuBarBorderColor", border);
      org.eclipse.core.runtime.preferences.IEclipsePreferences editors=InstanceScope.INSTANCE.getNode("org.eclipse.ui.editors");
-     editors.put("lineNumberRulerColor","160,169,193");
-     editors.put("AbstractTextEditor.Color.Background","37,38,56");
+     editors.put("lineNumberRulerColor",rgbString(palette.muted));
+     editors.put("AbstractTextEditor.Color.Background",rgbString(palette.background));
      editors.putBoolean("AbstractTextEditor.Color.Background.SystemDefault",false);
-     editors.put("AbstractTextEditor.Color.Foreground","230,233,244");
+     editors.put("AbstractTextEditor.Color.Foreground",rgbString(palette.foreground));
      editors.putBoolean("AbstractTextEditor.Color.Foreground.SystemDefault",false);
-     editors.put("currentLineColor","48,52,75");
+     editors.put("currentLineColor",rgbString(palette.accent));
      d.setData("org.eclipse.swt.internal.win32.Combo.useDarkTheme",Boolean.FALSE);
      d.setData("org.eclipse.swt.internal.win32.Table.headerLineColor",border);
      d.addFilter(SWT.Show,event->{if(activeTheme() && event.widget instanceof Menu) menu((Menu)event.widget);});
-     accent=new Color(d,72,81,118);
+
      configureDisabledLabels(d);
      initialized=true;
     }
@@ -49,6 +52,22 @@ public final class Startup implements IStartup {
    }
    d.timerExec(1000,this);
   }});
+ }
+ private Color rgb(Display display,int value){return new Color(display,(value>>16)&255,(value>>8)&255,value&255);}
+ private String rgbString(int value){return ((value>>16)&255)+","+((value>>8)&255)+","+(value&255);}
+ private void applyPalette(Display display,ThemePalette palette){
+  paletteId=palette.id;fg=rgb(display,palette.foreground);bg=rgb(display,palette.background);border=rgb(display,palette.border);accent=rgb(display,palette.accent);muted=rgb(display,palette.muted);
+  syntaxColors.clear();
+  display.setData("org.eclipse.swt.internal.win32.menuBarForegroundColor",fg);
+  display.setData("org.eclipse.swt.internal.win32.menuBarBackgroundColor",bg);
+  display.setData("org.eclipse.swt.internal.win32.menuBarBorderColor",border);
+  display.setData("org.eclipse.swt.internal.win32.Table.headerLineColor",border);
+  configureDisabledLabels(display);
+  org.eclipse.core.runtime.preferences.IEclipsePreferences editors=InstanceScope.INSTANCE.getNode("org.eclipse.ui.editors");
+  editors.put("lineNumberRulerColor",rgbString(palette.muted));
+  editors.put("AbstractTextEditor.Color.Background",rgbString(palette.background));
+  editors.put("AbstractTextEditor.Color.Foreground",rgbString(palette.foreground));
+  editors.put("currentLineColor",rgbString(palette.accent));
  }
  private boolean dark(Color c) { return c.getRed()+c.getGreen()+c.getBlue()<330; }
  private void visit(Control c) {
@@ -149,11 +168,11 @@ public final class Startup implements IStartup {
    }
   }
   if(c.getClass().getSimpleName().equals("TabbedPropertyTitle")) {
-   if(c.getData("salutem.titleColors")==null)try {
+   if(!java.util.Objects.equals(paletteId,c.getData("salutem.titleColors")))try {
     java.lang.reflect.Method method=c.getClass().getMethod("setColor",String.class,org.eclipse.swt.graphics.RGBA.class);
     for(String key:new String[]{IFormColors.H_GRADIENT_START,IFormColors.H_GRADIENT_END,IFormColors.H_BOTTOM_KEYLINE1,IFormColors.H_BOTTOM_KEYLINE2})
-     method.invoke(c,key,new org.eclipse.swt.graphics.RGBA(37,38,56,255));
-    c.setData("salutem.titleColors",Boolean.TRUE);c.redraw();
+     method.invoke(c,key,new org.eclipse.swt.graphics.RGBA(bg.getRed(),bg.getGreen(),bg.getBlue(),255));
+    c.setData("salutem.titleColors",paletteId);c.redraw();
    }catch(ReflectiveOperationException ignored){}
    for(Class<?> type=c.getClass();type!=null;type=type.getSuperclass()) for(java.lang.reflect.Field f:type.getDeclaredFields()) {
     if(FormColors.class.isAssignableFrom(f.getType()))try {
@@ -169,7 +188,7 @@ public final class Startup implements IStartup {
   }
  }
  private void configureDisabledLabels(Display display) {
-  display.setData("org.eclipse.swt.internal.win32.Label.disabledForegroundColor",new Color(display,183,190,209));
+  display.setData("org.eclipse.swt.internal.win32.Label.disabledForegroundColor",muted);
   display.setData("org.eclipse.swt.internal.win32.ProgressBar.useColors",Boolean.TRUE);
  }
  private boolean inProgressPanel(Control control) {
@@ -245,8 +264,9 @@ public final class Startup implements IStartup {
   return false;
  }
  private final class PaletteSurface extends org.eclipse.draw2d.Figure {
-  PaletteSurface(IFigure contents) {setLayoutManager(new org.eclipse.draw2d.StackLayout());add(contents);setBackgroundColor(bg);setOpaque(true);}
+  PaletteSurface(IFigure contents) {setLayoutManager(new org.eclipse.draw2d.StackLayout());add(contents);setBackgroundColor(bg);setOpaque(false);}
   @Override public void paint(org.eclipse.draw2d.Graphics graphics) {
+   if(!activeTheme()){super.paint(graphics);return;}
    org.eclipse.draw2d.ScaledGraphics colors=new org.eclipse.draw2d.ScaledGraphics(graphics) {
     @Override public void setForegroundColor(Color color){super.setForegroundColor(fg);}
     @Override public void setBackgroundColor(Color color){
@@ -262,7 +282,7 @@ public final class Startup implements IStartup {
   }
  }
  private boolean activeTheme() {
-  return "com.salutem.jasper.theme.deepblue".equals(InstanceScope.INSTANCE.getNode("org.eclipse.e4.ui.css.swt.theme").get("themeid",""));
+  return ThemePalette.find(InstanceScope.INSTANCE.getNode("org.eclipse.e4.ui.css.swt.theme").get("themeid",""))!=null;
  }
  private void uniformItem(TreeItem item,int columns) {
   for(int col=0;col<columns;col++) {
@@ -326,11 +346,11 @@ public final class Startup implements IStartup {
   if(!c.getForeground().equals(fg))c.setForeground(fg);
   // The header paints its own gradient rather than the Control background.
   if(c.getClass().getSimpleName().equals("TabbedPropertyTitle")) {
-   if(c.getData("salutem.titleColors")==null)try {
+   if(!java.util.Objects.equals(paletteId,c.getData("salutem.titleColors")))try {
     java.lang.reflect.Method method=c.getClass().getMethod("setColor",String.class,org.eclipse.swt.graphics.RGBA.class);
     for(String key:new String[]{IFormColors.H_GRADIENT_START,IFormColors.H_GRADIENT_END,IFormColors.H_BOTTOM_KEYLINE1,IFormColors.H_BOTTOM_KEYLINE2})
-     method.invoke(c,key,new org.eclipse.swt.graphics.RGBA(37,38,56,255));
-    c.setData("salutem.titleColors",Boolean.TRUE);c.redraw();
+     method.invoke(c,key,new org.eclipse.swt.graphics.RGBA(bg.getRed(),bg.getGreen(),bg.getBlue(),255));
+    c.setData("salutem.titleColors",paletteId);c.redraw();
    }catch(ReflectiveOperationException ignored){}
    for(String method:new String[]{"setBackgroundGradientStart","setBackgroundGradientEnd","setBackgroundBottomKeyline1","setBackgroundBottomKeyline2"}) {
     try { c.getClass().getMethod(method,Color.class).invoke(c,method.contains("Keyline")?border:bg); }
@@ -344,6 +364,7 @@ public final class Startup implements IStartup {
   for(TreeItem child:i.getItems())item(child);
  }
 }
+
 
 
 

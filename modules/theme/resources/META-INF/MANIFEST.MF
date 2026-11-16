@@ -2,12 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Salutem Noite Theme
 Bundle-SymbolicName: com.salutem.jasper.theme.deepblue;singleton:=true
-Bundle-Version: 1.7.5
+Bundle-Version: 2.0.0
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,
  org.eclipse.equinox.preferences,org.eclipse.swt,
  org.eclipse.jface.text,org.eclipse.draw2d,org.eclipse.ui.forms,org.eclipse.e4.ui.css.swt.theme
 Bundle-ClassPath: .
+
 
 
 

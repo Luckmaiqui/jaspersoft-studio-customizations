@@ -1,4 +1,4 @@
-# Manutenção e releases
+﻿# Manutenção e releases
 
 ## Alterar uma função
 
@@ -6,7 +6,7 @@
 - Idioma: `modules/language/src/com/salutem/l10n/Startup.java` e `translations.properties` em seus recursos.
 - Ordenação: `modules/connection-order/src/com/salutem/order/`.
 - Mensagens dos módulos: `translations/fragments/`; os textos em inglês estão em `translations/reference/`.
-- Instalação: `installer/Instalar.ps1`.
+- Instalação: `installer/common/Instalar.ps1`.
 
 Preserve os parâmetros `{0}`, `%s`, URLs e identificadores técnicos. Não traduza valores de campos editáveis, nomes de documentos, expressões ou dados do modelo.
 

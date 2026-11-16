@@ -5,12 +5,44 @@ $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
 $versions=Get-Content -LiteralPath (Join-Path $root 'versions.json') -Raw|ConvertFrom-Json
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+function Same-JarContent([string]$Left,[string]$Right){
+    $a=[IO.Compression.ZipFile]::OpenRead($Left);$b=[IO.Compression.ZipFile]::OpenRead($Right)
+    try{
+        $filesA=@($a.Entries|Where-Object{-not $_.FullName.EndsWith('/')});$filesB=@($b.Entries|Where-Object{-not $_.FullName.EndsWith('/')})
+        if($filesA.Count -ne $filesB.Count){return $false}
+        foreach($entry in $filesA){
+            $other=$b.GetEntry($entry.FullName);if(-not $other){return $false}
+            $hashes=@()
+            foreach($current in @($entry,$other)){
+                $stream=$current.Open()
+                try{
+                    $sha=[Security.Cryptography.SHA256]::Create()
+                    try{
+                        if($current.FullName -match '\.(properties|xml|css|MF)$'){
+                            $reader=New-Object IO.StreamReader($stream)
+                            try{$bytes=[Text.Encoding]::UTF8.GetBytes(($reader.ReadToEnd() -replace "`r`n","`n"))}finally{$reader.Dispose()}
+                            $hashes+=[Convert]::ToHexString($sha.ComputeHash($bytes))
+                        }else{$hashes+=[Convert]::ToHexString($sha.ComputeHash($stream))}
+                    }finally{$sha.Dispose()}
+                }finally{$stream.Dispose()}
+            }
+            if($hashes[0] -ne $hashes[1]){return $false}
+        }
+        return $true
+    }finally{$a.Dispose();$b.Dispose()}
+}
 function Zip-Folder([string]$Folder,[string]$Destination){
     $temp=Join-Path (Join-Path $root 'build') ([guid]::NewGuid().ToString()+'.zip')
     [IO.Compression.ZipFile]::CreateFromDirectory($Folder,$temp)
+    if($Destination.EndsWith('.jar') -and (Test-Path -LiteralPath $Destination)){
+        if(Same-JarContent $temp $Destination){return}
+        throw "O JAR $Destination mudou sem aumento de versão. Aumente a versão do componente em versions.json."
+    }
     Copy-Item -LiteralPath $temp -Destination $Destination -Force
 }
 if(-not $PackageOnly){
+    & node (Join-Path $PSScriptRoot 'GenerateThemes.mjs')
+    if($LASTEXITCODE -ne 0){throw 'Geração dos temas falhou.'}
     if(-not $StudioPath){$StudioPath=$env:JSS_HOME}
     if(-not $StudioPath){throw 'Informe -StudioPath ou a variável JSS_HOME apontando para o Studio 6.20.6.'}
     $StudioPath=(Resolve-Path -LiteralPath $StudioPath).Path
@@ -60,17 +92,48 @@ if(-not $PackageOnly){
 $snapshot=Get-Content -LiteralPath (Join-Path $root 'artifacts/index.json') -Raw|ConvertFrom-Json
 $stage=Join-Path $root ('build/package-'+[guid]::NewGuid())
 $package=Join-Path $stage 'Tradução e Tema JS'
-New-Item -ItemType Directory -Force -Path (Join-Path $package 'pacote/plugins'),(Join-Path $package 'fontes'),(Join-Path $root 'dist')|Out-Null
-Get-ChildItem -LiteralPath (Join-Path $root 'installer')|ForEach-Object{Copy-Item -LiteralPath $_.FullName -Destination $package -Recurse}
-$inventory=@()
-foreach($entry in $snapshot.files){$source=Join-Path $root $entry.path;Copy-Item -LiteralPath $source -Destination (Join-Path $package 'pacote/plugins');$inventory+=[pscustomobject]@{name=[IO.Path]::GetFileName($source);sha256=$entry.sha256.ToUpperInvariant()}}
+New-Item -ItemType Directory -Force -Path $package,(Join-Path $root 'dist')|Out-Null
 $utf8=New-Object Text.UTF8Encoding($true)
-[IO.File]::WriteAllText((Join-Path $package 'pacote/arquivos.json'),($inventory|ConvertTo-Json -Depth 3),$utf8)
-foreach($dir in @('modules','translations','scripts','tests')){Copy-Item -LiteralPath (Join-Path $root $dir) -Destination (Join-Path $package 'fontes') -Recurse}
-Copy-Item -LiteralPath (Join-Path $root 'versions.json'),(Join-Path $root 'README.md'),(Join-Path $root 'THIRD_PARTY_NOTICES.md') -Destination $package
-Copy-Item -LiteralPath (Join-Path $root 'docs/INSTALACAO.md') -Destination (Join-Path $package 'LEIA-ME.md')
-$artifact=Join-Path $root ('dist/Traducao-e-Tema-JS-v'+$versions.packageVersion+'.zip')
-Zip-Folder $stage $artifact
-$sha=(Get-FileHash -LiteralPath $artifact -Algorithm SHA256).Hash.ToLowerInvariant()
-[IO.File]::WriteAllText((Join-Path $root 'dist/SHA256SUMS.txt'),($sha+'  '+[IO.Path]::GetFileName($artifact)+"`n"),[Text.Encoding]::ASCII)
-Write-Output "Pacote criado: $artifact"
+$archives=@()
+foreach($component in @('themes','translation','connection-order')){
+    $config=Get-Content -LiteralPath (Join-Path $root "installer/$component/componente.json") -Raw|ConvertFrom-Json
+    $destination=Join-Path $package $config.folder
+    New-Item -ItemType Directory -Force -Path (Join-Path $destination 'pacote/plugins'),(Join-Path $destination 'fontes')|Out-Null
+    Get-ChildItem -LiteralPath (Join-Path $root "installer/$component")|ForEach-Object{Copy-Item -LiteralPath $_.FullName -Destination $destination -Recurse}
+    Copy-Item -LiteralPath (Join-Path $root 'installer/common/Instalar.ps1') -Destination $destination
+    $entries=@($snapshot.files|Where-Object{
+        if($component -eq 'themes'){$_.path -match '^artifacts/plugins/com\.salutem\.jasper\.theme\.'}
+        elseif($component -eq 'translation'){$_.path -match '^vendor/|^artifacts/plugins/com\.salutem\.(l10n\.|jasper\.language\.)'}
+        else{$_.path -match '^artifacts/plugins/com\.salutem\.jasper\.connectionorder_'}
+    })
+    if($entries.Count -eq 0){throw "Pacote vazio: $component"}
+    $inventory=@()
+    foreach($entry in $entries){$source=Join-Path $root $entry.path;Copy-Item -LiteralPath $source -Destination (Join-Path $destination 'pacote/plugins');$inventory+=[pscustomobject]@{name=[IO.Path]::GetFileName($source);sha256=$entry.sha256.ToUpperInvariant()}}
+    [IO.File]::WriteAllText((Join-Path $destination 'pacote/arquivos.json'),($inventory|ConvertTo-Json -Depth 3),$utf8)
+    $module=if($component -eq 'themes'){'theme'}elseif($component -eq 'translation'){'language'}else{'connection-order'}
+    Copy-Item -LiteralPath (Join-Path $root "modules/$module") -Destination (Join-Path $destination 'fontes') -Recurse
+    if($component -eq 'translation'){Copy-Item -LiteralPath (Join-Path $root 'translations') -Destination (Join-Path $destination 'fontes') -Recurse}
+    Copy-Item -LiteralPath (Join-Path $root 'THIRD_PARTY_NOTICES.md') -Destination $destination
+    $singleStage=Join-Path $root ('build/single-'+$component+'-'+[guid]::NewGuid())
+    New-Item -ItemType Directory -Force -Path $singleStage|Out-Null
+    Copy-Item -LiteralPath $destination -Destination $singleStage -Recurse
+    $name=if($component -eq 'themes'){'JS-Temas'}elseif($component -eq 'translation'){'JS-Traducao-ptBR'}else{'JS-Ordenacao'}
+    $archive=Join-Path $root ('dist/'+$name+'-v'+$versions.packageVersion+'.zip')
+    Zip-Folder $singleStage $archive;$archives+=$archive
+}
+$instructions=@'
+ESCOLHA APENAS O QUE DESEJA INSTALAR
+Temas: quatro opções de cores em Janela > Preferências > Gerais > Aparência.
+Traducao-ptBR: interface em Português (Brasil), independente dos temas.
+Ordenacao-de-conexoes: ordem numérica dos adaptadores, independente dos demais.
+Cada pasta tem seu próprio Instalar.bat. Feche o Studio antes de instalar.
+O Abrir JS.bat de Temas não força idioma; o da Tradução inicia em pt_BR.
+Compatibilidade: Jaspersoft Studio Community 6.20.6, Windows, Java 17 ou superior.
+'@
+[IO.File]::WriteAllText((Join-Path $package 'LEIA-ME.txt'),$instructions,$utf8)
+$combined=Join-Path $root ('dist/JS-Pacotes-Separados-v'+$versions.packageVersion+'.zip')
+Zip-Folder $stage $combined;$archives+=$combined
+$lines=@($archives|ForEach-Object{(Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash.ToLowerInvariant()+'  '+[IO.Path]::GetFileName($_)})
+[IO.File]::WriteAllText((Join-Path $root 'dist/SHA256SUMS.txt'),($lines -join "`n")+"`n",[Text.Encoding]::ASCII)
+[IO.File]::WriteAllText((Join-Path $root 'build/latest-package.txt'),$package,$utf8)
+$archives|ForEach-Object{Write-Output "Pacote criado: $_"}

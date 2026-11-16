@@ -3,6 +3,7 @@
 param([string]$StudioPath,[switch]$Elevated,[switch]$ValidateOnly,[switch]$Launch)
 $ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+$componentConfig=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'componente.json') -Raw|ConvertFrom-Json
 
 function Read-Manifest([string]$BundlePath){
     if(Test-Path -LiteralPath $BundlePath -PathType Container){$text=[IO.File]::ReadAllText((Join-Path $BundlePath 'META-INF\MANIFEST.MF'))}
@@ -79,7 +80,10 @@ try {
     if($Launch){
         $exe=Join-Path $plan.Root 'Jaspersoft Studio.exe'
         if(-not(Test-Path -LiteralPath $exe)){throw 'Executável Jaspersoft Studio.exe não encontrado.'}
-        Start-Process -FilePath $exe -ArgumentList @('-clean','-nl','pt_BR','-pluginCustomization',('"'+(Join-Path $PSScriptRoot 'padroes.ini')+'"'))
+        $launchArgs=@('-clean')
+        if($componentConfig.component -eq 'translation'){$launchArgs+=@('-nl','pt_BR')}
+        if($componentConfig.component -eq 'themes'){$launchArgs+=@('-pluginCustomization',('"'+(Join-Path $PSScriptRoot 'padroes.ini')+'"'))}
+        Start-Process -FilePath $exe -ArgumentList $launchArgs
         exit 0
     }
     $principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -103,7 +107,9 @@ try {
     $report=@('Instalação concluída.',('Pasta: '+$plan.Root),('Versão: '+$plan.Version),('Java: '+$plan.Java),('Complementos conferidos: '+$plan.Files.Count),('Módulos opcionais ausentes: '+$plan.Skipped.Count),('Arquivos adicionados: '+$added.Count),('Data: '+(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')))
     try{$report|Set-Content -LiteralPath (Join-Path $PSScriptRoot 'instalacao.log') -Encoding UTF8}catch{ }
     Add-Type -AssemblyName System.Windows.Forms
-    [Windows.Forms.MessageBox]::Show("Instalação concluída.`r`n`r`nAbra pelo arquivo Abrir JS.bat.`r`nEm uma área de trabalho já existente, selecione o tema Salutem Noite em Janela > Preferências > Gerais > Aparência.",'Tradução e Tema JS','OK','Information')|Out-Null
+    $message=$componentConfig.title+" instalado com sucesso.`r`n`r`nReinicie o Studio pelo Abrir JS.bat desta pasta."
+    if($componentConfig.component -eq 'themes'){$message+="`r`nSelecione Noite, Grafite, Floresta ou Ameixa em Janela > Preferências > Gerais > Aparência."}
+    [Windows.Forms.MessageBox]::Show($message,$componentConfig.title,'OK','Information')|Out-Null
     exit 0
 } catch {
     if($ValidateOnly){Write-Error $_;exit 1}

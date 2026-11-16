@@ -4,6 +4,12 @@
  <extension point="org.eclipse.e4.ui.css.swt.theme">
   <theme id="com.salutem.jasper.theme.deepblue" label="Salutem Noite" basestylesheeturi="css/salutem-noite.css"/>
   <themeAssociation themeId="com.salutem.jasper.theme.deepblue" colorAndFontId="org.eclipse.ui.defaultTheme"/>
+  <theme id="com.salutem.jasper.theme.graphite" label="Salutem Grafite" basestylesheeturi="css/salutem-grafite.css"/>
+  <themeAssociation themeId="com.salutem.jasper.theme.graphite" colorAndFontId="org.eclipse.ui.defaultTheme"/>
+  <theme id="com.salutem.jasper.theme.forest" label="Salutem Floresta" basestylesheeturi="css/salutem-floresta.css"/>
+  <themeAssociation themeId="com.salutem.jasper.theme.forest" colorAndFontId="org.eclipse.ui.defaultTheme"/>
+  <theme id="com.salutem.jasper.theme.plum" label="Salutem Ameixa" basestylesheeturi="css/salutem-ameixa.css"/>
+  <themeAssociation themeId="com.salutem.jasper.theme.plum" colorAndFontId="org.eclipse.ui.defaultTheme"/>
  </extension>
  <extension point="org.eclipse.ui.startup"><startup class="com.salutem.theme.Startup"/></extension>
 </plugin>

@@ -1,4 +1,4 @@
-/* Salutem Noite 1.5.1 — superfícies cinza-azuladas e contraste legível. */
+/* Salutem 2.0.0 — superfícies cinza-azuladas e contraste legível. */
 Shell, Composite, ScrolledComposite, Group, Canvas, FigureCanvas {
     background-color: #252638;
     color: #E6E9F4;
@@ -10,17 +10,17 @@ Shell, Composite, ScrolledComposite, Group, Canvas, FigureCanvas {
 }
 #org-eclipse-ui-main-toolbar, .MTrimBar, .MToolBar, .MToolControl, ToolBar {
     background-color: #1D2032;
-    color: #E6EAF5;
+    color: #E6E9F4;
 }
-.MPartTab { background-color: #252638; color: #C1C8DD; }
+.MPartTab { background-color: #252638; color: #B7BED1; }
 .MPartTab:selected { background-color: #30344B; color: #FFFFFF; }
 CTabFolder {
     background-color: #252638;
     color: #E6E9F4;
     swt-outer-keyline-color: #10162A;
 }
-CTabItem { background-color: #252638; color: #C1C8DD; }
-CTabItem:selected { background-color: #333852; color: #FFFFFF; }
+CTabItem { background-color: #252638; color: #B7BED1; }
+CTabItem:selected { background-color: #30344B; color: #FFFFFF; }
 Sash, .Sash, .MPartSashContainer > Sash { background-color: #10162A; }
 Table, Tree, StyledText, Text, List, Combo, CCombo, Spinner {
     background-color: #222436;
@@ -38,14 +38,14 @@ Label:disabled, CLabel:disabled {
     background-color: #252638;
     color: #B7BED1;
 }
-Group { background-color: #252638; color: #E0E4F1; }
+Group { background-color: #252638; color: #E6E9F4; }
 Button, ToolItem, MenuItem {
     background-color: #30344B;
-    color: #F4F5FA;
+    color: #E6E9F4;
 }
 MenuBar, Menu { background-color: #1D2032; color: #E6E9F4; }
 Link, a, .hyperlink { color: #72D7CD; }
-.MTrimBar .MToolItem:selected { background-color: #343A55; }
+.MTrimBar .MToolItem:selected { background-color: #30344B; }
 
 /* Cabeçalhos e abas da página de propriedades. */
 TabbedPropertyTitle {

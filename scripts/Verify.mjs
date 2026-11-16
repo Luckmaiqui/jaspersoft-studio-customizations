@@ -32,6 +32,14 @@ for(const file of files('translations/fragments').filter(f=>f.endsWith('_pt_BR.p
 }
 const lang=properties(fs.readFileSync(path.join(root,'modules/language/resources/translations.properties'),'utf8'));
 for(const [en,pt] of Object.entries({'Problems':'Problemas','Repository Explorer':'Explorador de repositórios','Text Field':'Campo de texto','Page Header':'Cabeçalho da página'}))if(lang[en]!==pt)throw Error('Rótulo regressivo: '+en);
+const palettes=properties(fs.readFileSync(path.join(root,'modules/theme/resources/palettes.properties'),'utf8'));
+function luminance(hex){const rgb=hex.match(/../g).map(c=>parseInt(c,16)/255).map(c=>c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4);return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];}
+function contrast(a,b){const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+for(const id of palettes.ids.split(',')){
+ for(const surface of ['background','input','toolbar','accent'])if(contrast(palettes[id+'.foreground'],palettes[id+'.'+surface])<4.5)throw Error('Contraste insuficiente: '+id+'/'+surface);
+ if(contrast(palettes[id+'.muted'],palettes[id+'.background'])<4.5)throw Error('Contraste insuficiente do texto secundário: '+id);
+ if(!fs.existsSync(path.join(root,'modules/theme/resources/css',palettes[id+'.css'])))throw Error('CSS ausente: '+id);
+}
 for(const file of [...sourceFiles,...files('installer'),...files('scripts')].filter(f=>/\.(java|ps1|bat|mjs|properties|xml|ini)$/i.test(f))){
  const text=fs.readFileSync(path.join(root,file),'utf8');
  if(/[A-Z]:\\Users\\[^\\\r\n]+/i.test(text))throw Error('Possível caminho/dado privado: '+file);
