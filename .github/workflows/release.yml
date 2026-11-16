@@ -1,0 +1,61 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão do pacote em versions.json (ex.: 1.0.0)'
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Enable long paths on the runner
+        shell: pwsh
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Validate release version
+        shell: pwsh
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          $v = (Get-Content versions.json -Raw | ConvertFrom-Json).packageVersion
+          if ($env:GITHUB_EVENT_NAME -eq 'push' -and $env:GITHUB_REF_NAME -ne "v$v") { throw 'Tag divergente de versions.json' }
+          if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch' -and $env:REQUESTED_VERSION -ne $v) { throw 'Versão divergente de versions.json' }
+          if (-not (Test-Path "docs/releases/v$v.md")) { throw 'Notas de release ausentes' }
+          "RELEASE_TAG=v$v" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Verify artifacts and translations
+        run: node scripts/Verify.mjs
+      - name: Test numeric order
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force build/test-classes | Out-Null
+          javac -encoding UTF-8 -d build/test-classes modules/connection-order/src/com/salutem/order/NumericOrder.java tests/NumericOrderTest.java
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          java -cp build/test-classes NumericOrderTest
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package installer
+        shell: pwsh
+        run: ./scripts/Build.ps1 -PackageOnly
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $assets = @(Get-ChildItem dist/*.zip | ForEach-Object FullName) + @((Resolve-Path dist/SHA256SUMS.txt).Path)
+          gh release create $env:RELEASE_TAG @assets --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Tradução e Tema JS $env:RELEASE_TAG" --notes-file "docs/releases/$env:RELEASE_TAG.md"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
