@@ -1,4 +1,14 @@
-﻿# Versão 2.1.1
+﻿# Versão 2.2.0
+
+- Ordenação numérica das conexões de banco de dados e JasperReports Server no Explorador de repositórios.
+- Mantém pastas e relatórios na organização original, incluindo seleção e categorias expandidas.
+- Novas conexões e alterações de nome usam o mesmo comparador da árvore.
+- Mantém a pesquisa e a ordenação das listas do preview e dataset.
+
+Atualize somente o pacote JS-Ordenacao. Feche o Studio, execute Instalar.bat em Ordenacao-de-conexoes e reinicie pelo Abrir JS.bat.
+
+Validação local com TreeViewer e modelos reais MDataAdapter/MServerProfile: ordem por código, cópias, duplicatas, renomeação, expansão, seleção e preservação dos modelos e relatórios. Nenhum servidor foi acessado nesses testes.
+# Versão 2.1.1
 
 - Corrige a posição da pesquisa de conexões no preview e no dataset: abre abaixo do botão original, sem depender do foco do editor ou do cursor.
 - Se não houver espaço abaixo, abre acima, respeitando o monitor do botão e os limites da tela.

@@ -8,10 +8,10 @@ Baixe em [Releases](https://github.com/Luckmaiqui/pacote-de-atualizacoes-do-jasp
 
 | ZIP | Pasta | Conteúdo |
 |---|---|---|
-| JS-Temas-v2.1.1.zip | Temas | Salutem Noite (azul), Grafite, Floresta (verde) e Ameixa (roxo) |
-| JS-Traducao-ptBR-v2.1.1.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
-| JS-Ordenacao-v2.1.1.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
-| JS-Pacotes-Separados-v2.1.1.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
+| JS-Temas-v2.2.0.zip | Temas | Salutem Noite (azul), Grafite, Floresta (verde) e Ameixa (roxo) |
+| JS-Traducao-ptBR-v2.2.0.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
+| JS-Ordenacao-v2.2.0.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
+| JS-Pacotes-Separados-v2.2.0.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
 
 Cada pasta tem **Instalar.bat** e **Abrir JS.bat** próprios. Você pode instalar apenas uma, duas ou todas. O pacote de temas não instala tradução nem muda o idioma. O pacote de tradução não instala nem seleciona tema. A ordenação também é independente.
 
@@ -54,3 +54,5 @@ Personalizações preparadas para Luckas / Salutem. Não é produto oficial Jasp
 ## Pesquisa de conexões
 
 Instale o pacote Ordenacao-de-conexoes atualizado. Ao abrir a lista de adaptadores no preview ou no dataset, digite o código ou parte do nome. A pesquisa ignora maiúsculas e acentos e aceita vários termos. Use as setas e Enter, clique em uma opção ou pressione Esc para cancelar. Não altera credenciais, consultas nem executa pesquisa no servidor; filtra somente os rótulos das conexões disponíveis.
+
+A ordenação numérica também se aplica às conexões de banco de dados e JasperReports Server no Explorador de repositórios. Pastas, relatórios, seleção e expansão da árvore são preservados.

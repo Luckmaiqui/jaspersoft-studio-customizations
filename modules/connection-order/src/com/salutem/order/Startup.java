@@ -15,6 +15,7 @@ public final class Startup implements IStartup {
   }catch(ReflectiveOperationException|RuntimeException error){report(error);}
  });}
  @SuppressWarnings("unchecked") private void sortAll(Display display){
+  try{RepositoryOrder.attachOpenViews();}catch(RuntimeException error){report(error);}
   if(storagesField==null||descriptorsField==null)return;
   try{
    Map<?,?> stores=(Map<?,?>)storagesField.get(null);
