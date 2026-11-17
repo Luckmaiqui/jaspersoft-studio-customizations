@@ -3,7 +3,7 @@ on:
   push:
     tags: ['v*']
     branches: ['main']
-    paths: ['jasperstudio-update-v2.3.2.zip']
+    paths: ['jasperstudio-update-v2.4.0.zip']
   workflow_dispatch:
     inputs:
       version:
@@ -30,15 +30,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Import verified 2.3.2 update
-        if: github.ref_type == 'branch' && (github.event_name == 'push' || inputs.version == '2.3.2')
+      - name: Import verified 2.4.0 update
+        if: github.ref_type == 'branch' && (github.event_name == 'push' || inputs.version == '2.4.0')
         shell: pwsh
         run: |
-          $archive = 'jasperstudio-update-v2.3.2.zip'
-          if ((Get-FileHash $archive).Hash -ne 'B6DC5E3409681994CE816F42E551EBB9AE5B095D581A6CE1938B5247C77465C0') { throw 'SHA256 inválido' }
+          $archive = 'jasperstudio-update-v2.4.0.zip'
+          if ((Get-FileHash $archive).Hash -ne '8B68AC98EC93A6CBA351EC910E55C7B8D8CB638DC2BFBBC3EDD8CB33C083983D') { throw 'SHA256 inválido' }
           $stage = Join-Path $env:RUNNER_TEMP 'source-update'
           Expand-Archive -LiteralPath $archive -DestinationPath $stage
-          git rm --ignore-unmatch artifacts/plugins/com.salutem.jasper.connectionorder_1.3.1.jar
+          git rm --ignore-unmatch artifacts/plugins/com.salutem.jasper.connectionorder_1.3.1.jar artifacts/plugins/com.salutem.jasper.connectionorder_1.3.2.jar
           Get-ChildItem -LiteralPath $stage | Where-Object Name -notin @('.git','.github') | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination . -Recurse -Force }
           node scripts/Verify.mjs
           if ($LASTEXITCODE -ne 0) { throw 'Verificação falhou' }
@@ -70,6 +70,13 @@ jobs:
           javac -encoding UTF-8 -d build/test-classes modules/connection-order/src/com/salutem/order/NumericOrder.java tests/NumericOrderTest.java
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           java -cp build/test-classes NumericOrderTest
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test aggregate search and cancellation
+        shell: pwsh
+        run: |
+          javac -encoding UTF-8 -d build/test-classes modules/connection-order/src/com/salutem/order/GlobalSearchEngine.java tests/GlobalSearchEngineTest.java
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          java -cp build/test-classes com.salutem.order.GlobalSearchEngineTest
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package installer
         shell: pwsh
