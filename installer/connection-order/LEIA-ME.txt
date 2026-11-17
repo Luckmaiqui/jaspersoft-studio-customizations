@@ -1,13 +1,11 @@
-﻿# Versão 2.3.1
+# Versão 2.4.0
 
-- Corrige a filtragem de projetos Java/MyReports: resolve os recursos por trás dos nós JDT e preserva contêineres virtuais que não adaptam a IResource.
-- Expande os nós reais da árvore de projetos, incluindo wrappers Java, para revelar arquivos encontrados.
-- Testa explicitamente filtros simultâneos e independentes de projetos e repositórios.
-- A pesquisa do JasperServer usa a API com servidor explícito, sem obter a conexão da seleção da árvore.
-- Mantém o encaminhamento do recurso escolhido para o explorador e mostra a causa interna das falhas da API nativa.
+- Janela única de pesquisa global em todos os JasperServers, com escopo opcional por conexão, resultados identificados por servidor e navegação para a árvore.
+- Pesquisa explícita por nomes e descrições (mínimo 3 caracteres), sem baixar relatórios em massa.
+- No máximo 2 consultas simultâneas, cancelamento de fila e requisições, falhas isoladas e detalhes por conexão.
+- Campo do Explorador de Projeto na barra nativa, preservando o pai e o layout do CommonNavigator para corrigir o desaparecimento de MyReports ao expandir.
+- Filtros de projetos e repositórios independentes. Temas e tradução mantidos.
 
-Esta versão continua pesquisando o conteúdo remoto de um servidor escolhido. Não há pesquisa global simultânea em todos os servidores. Esse recurso exigiria um agregador próprio com limites de paralelismo, cancelamento, paginação, autenticação e resultados identificados por servidor. Nenhuma consulta em massa foi executada.
+Validação local: agregação simulada de 8 servidores, limite de paralelismo, falha isolada, cancelamento, independência de filtros e preservação do pai da árvore em SWT real. O teste integrado com o workspace e os servidores reais requer reinício do Studio.
 
-Validação: modelos de conexão reais e controles SWT, projeto Java simulado com a interface IJavaProject, MyReports inicialmente recolhido, filtro profundo, restauração, isolamento entre as duas árvores e contrato da API remota com implementação simulada. A autenticação e abertura da pesquisa nos servidores reais precisam ser verificadas no aplicativo.
-
-Feche o Studio, atualize somente JS-Ordenacao e abra por Abrir JS.bat em Ordenacao-de-conexoes.
+Feche o Studio após salvar e reinicie pelo Abrir JS.bat de Ordenacao-de-conexoes.

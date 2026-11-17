@@ -13,6 +13,11 @@ public class CheckExplorerSearch {
   public static void doFindResource(Object provider,TreeViewer viewer){throw new AssertionError("Não usar a API dependente da seleção da árvore");}
   private static void selectResource(Object provider,MServerProfile server,Object resource,TreeViewer viewer){if(server!=selected || resource!=result)throw new AssertionError("Resultado errado");reveals++;}
  }
+ public static final class ConnectingServer {
+  Object client;int connects;
+  public Object getWsClient(){return client;}
+  public Object getWsClient(org.eclipse.core.runtime.IProgressMonitor monitor){connects++;client=new Object();return client;}
+ }
  static MDataAdapter adapter(String name){return new MDataAdapter(null,new NoDataAdapterDescriptor(){public String getTitle(){return name;}});}
  static MServerProfile server(String name){ServerProfile p=new ServerProfile();p.setName(name);return new MServerProfile(null,p){public JasperReportsConfiguration getJasperConfiguration(){return null;}};}
  static TreeViewer viewer(Composite parent,Object input,Map<Object,List<Object>> nodes){
@@ -22,10 +27,15 @@ public class CheckExplorerSearch {
   });v.setLabelProvider(new LabelProvider(){public String getText(Object n){return n instanceof com.jaspersoft.studio.model.ANode?((com.jaspersoft.studio.model.ANode)n).getDisplayText():n instanceof IResource?((IResource)n).getName():String.valueOf(n);}});v.setInput(input);v.expandToLevel(2);return v;
  }
  static Text search(TreeViewer v){Composite wrapper=v.getTree().getParent();for(Control c:wrapper.getChildren())if(c instanceof Composite && c!=v.getTree())for(Control x:((Composite)c).getChildren())if(x instanceof Text)return (Text)x;throw new AssertionError("Campo ausente");}
- static Label status(TreeViewer v){for(Control c:v.getTree().getParent().getChildren())if(c instanceof Label)return (Label)c;throw new AssertionError("Status ausente");}
+ static Text searchProject(Composite parent){for(Control c:parent.getChildren()){if(c instanceof Text)return (Text)c;if(c instanceof Composite){Text t=searchProject((Composite)c);if(t!=null)return t;}}return null;}
+ static Label status(TreeViewer v){if(v.getTree().getData("salutem.explorerSearch")!=null)try{Field f=ExplorerSearch.class.getDeclaredField("status");f.setAccessible(true);return (Label)f.get(v.getTree().getData("salutem.explorerSearch"));}catch(Exception e){throw new AssertionError(e);}for(Control c:v.getTree().getParent().getChildren())if(c instanceof Label)return (Label)c;throw new AssertionError("Status ausente");}
  static void pump(Display d,BooleanSupplier done){long timeout=System.currentTimeMillis()+5000;while(!done.getAsBoolean() && System.currentTimeMillis()<timeout)if(!d.readAndDispatch())try{Thread.sleep(5);}catch(InterruptedException e){throw new AssertionError(e);}if(!done.getAsBoolean())throw new AssertionError("Timeout da busca");}
  static void waitUI(Display d,int millis){long end=System.currentTimeMillis()+millis;while(System.currentTimeMillis()<end)if(!d.readAndDispatch())try{Thread.sleep(5);}catch(InterruptedException e){throw new AssertionError(e);}}
  public static void main(String[]args)throws Exception{
+  ConnectingServer unconnected=new ConnectingServer();org.eclipse.core.runtime.NullProgressMonitor monitor=new org.eclipse.core.runtime.NullProgressMonitor();
+  if(NativeServerSearch.client(unconnected)!=null || !NativeServerSearch.connect(unconnected,monitor) || unconnected.connects!=1)throw new AssertionError("Servidor não inicializado");
+  NativeServerSearch.connect(unconnected,monitor);if(unconnected.connects!=1)throw new AssertionError("Reconectou servidor inicializado");
+  ConnectingServer canceled=new ConnectingServer();monitor.setCanceled(true);if(NativeServerSearch.connect(canceled,monitor) || canceled.connects!=0)throw new AssertionError("Conectou após cancelar");
   Display d=new Display();Shell shell=new Shell(d);shell.setLayout(new FillLayout());shell.setSize(1200,700);
   try{
    Composite left=new Composite(shell,SWT.NONE);left.setLayout(new FillLayout());Composite right=new Composite(shell,SWT.NONE);right.setLayout(new FillLayout());
@@ -70,7 +80,10 @@ public class CheckExplorerSearch {
    });
    if(ExplorerSearch.resource(javaProject)!=project)throw new AssertionError("Projeto Java não adaptado");
    projectNodes.put(workspace,List.of(javaProject));projectNodes.put(javaProject,List.of(folder));projectNodes.remove(project);
-   TreeViewer projects=viewer(right,workspace,projectNodes);projects.setSelection(new StructuredSelection(other));ExplorerSearch.attach(projects,false,null,()->workspace);Text projectField=search(projects);projects.collapseAll();ISelection selectionBefore=projects.getSelection();
+   TreeViewer projects=viewer(right,workspace,projectNodes);projects.setSelection(new StructuredSelection(other));org.eclipse.jface.action.ToolBarManager toolbar=new org.eclipse.jface.action.ToolBarManager();toolbar.createControl(right);
+   Composite originalParent=projects.getTree().getParent();ExplorerSearch.attachProject(projects,toolbar,()->workspace);
+   if(projects.getTree().getParent()!=originalParent)throw new AssertionError("CommonNavigator foi reparentado");
+   Text projectField=searchProject(toolbar.getControl());projects.collapseAll();ISelection selectionBefore=projects.getSelection();
    field.setText("014");waitUI(d,350);
    projectField.setText("ficha padrao");pump(d,()->status(projects).getText().contains("1 "));
    TreeItem files=projects.getTree().getItem(0).getItem(0);if(files.getItemCount()!=1 || files.getItem(0).getData()!=match)throw new AssertionError("Arquivo e ancestrais");

@@ -57,6 +57,16 @@ if(-not $PackageOnly){
     $compiler=Get-ChildItem -LiteralPath $plugins -File -Filter 'org.eclipse.jdt.core.compiler.batch_*.jar'|Select-Object -First 1
     if(-not $compiler){throw 'Compilador ECJ não encontrado nos plugins do Studio.'}
     $classpath=(Get-ChildItem -LiteralPath $plugins -File -Filter '*.jar'|ForEach-Object{$_.FullName.Replace('\','/')}) -join [IO.Path]::PathSeparator
+    # AFinderUI exposes DTO types from the server bundle's nested class path.
+    $serverJar=Join-Path $plugins 'com.jaspersoft.studio.server_6.20.6.final.jar'
+    $serverZip=[IO.Compression.ZipFile]::OpenRead($serverJar)
+    try{
+        $dto=$serverZip.Entries|Where-Object{$_.FullName -match '^lib/jasperserver-dto-.*\.jar$'}|Select-Object -First 1
+        if(-not $dto){throw 'DTO JasperServer não encontrado.'}
+        $dtoPath=Join-Path $root 'build/jasperserver-dto.jar'
+        [IO.Compression.ZipFileExtensions]::ExtractToFile($dto,$dtoPath,$true)
+        $classpath+=[IO.Path]::PathSeparator+$dtoPath.Replace('\','/')
+    }finally{$serverZip.Dispose()}
     $specs=@(@{Name='theme';Version=$versions.theme;Id='com.salutem.jasper.theme.deepblue'},@{Name='language';Version=$versions.language;Id='com.salutem.jasper.language.pt_BR'},@{Name='connection-order';Version=$versions.connectionOrder;Id='com.salutem.jasper.connectionorder'})
     foreach($spec in $specs){
         $module=Join-Path $root ('modules/'+$spec.Name)

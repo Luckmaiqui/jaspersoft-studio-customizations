@@ -12,11 +12,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.jface.action.*;
 import com.jaspersoft.studio.model.ANode;
 import com.jaspersoft.studio.repository.RepositoryView;
 
-/** Local explorer filters. Server contents are searched only through the explicit native action. */
+/** Independent local filters; remote metadata search is an explicit user action. */
 public final class ExplorerSearch {
  private static final String KEY="salutem.explorerSearch";
  private final TreeViewer viewer;
@@ -34,7 +34,7 @@ public final class ExplorerSearch {
    if(!(e.widget instanceof Control))return;
    for(Control c=(Control)e.widget;c!=null;c=c.getParent())if(c.getData(KEY) instanceof ExplorerSearch){
     ExplorerSearch search=(ExplorerSearch)c.getData(KEY);e.doit=false;e.type=SWT.None;
-    display.asyncExec(()->{if(!search.text.isDisposed()){if(search.repository && search.remoteSearch!=null)search.remoteSearch.run();else search.text.setFocus();}});return;
+    display.asyncExec(()->{if(search.text!=null && !search.text.isDisposed()){if(search.repository && search.remoteSearch!=null)search.remoteSearch.run();else search.text.setFocus();}});return;
    }
   });
  }
@@ -45,7 +45,7 @@ public final class ExplorerSearch {
    if(part instanceof RepositoryView){RepositoryView view=(RepositoryView)part;TreeViewer tree=view.getTreeViewer();attach(tree,true,()->openServerSearch(view,tree));}
    else if(part!=null && ref.getId().equals("org.eclipse.ui.navigator.ProjectExplorer"))try{
     Object tree=part.getClass().getMethod("getCommonViewer").invoke(part);
-    if(tree instanceof TreeViewer)attach((TreeViewer)tree,false,null);
+    if(tree instanceof TreeViewer)attachProject((TreeViewer)tree,part.getViewSite().getActionBars().getToolBarManager(),()->ResourcesPlugin.getWorkspace().getRoot());
    }catch(ReflectiveOperationException error){System.err.println("Salutem project filter: "+error);}
   }
  }
@@ -55,6 +55,21 @@ public final class ExplorerSearch {
  static void attach(TreeViewer viewer,boolean repository,Runnable remoteSearch,java.util.function.Supplier<IWorkspaceRoot> workspaceRoot){
   if(viewer==null || viewer.getTree().isDisposed() || viewer.getTree().getData(KEY)!=null)return;
   new ExplorerSearch(viewer,repository,remoteSearch,workspaceRoot).create();
+ }
+ static void attachProject(TreeViewer viewer,IToolBarManager manager,java.util.function.Supplier<IWorkspaceRoot> root){
+  Tree tree=viewer.getTree();if(tree.isDisposed() || tree.getData(KEY)!=null)return;
+  ExplorerSearch search=new ExplorerSearch(viewer,false,null,root);tree.setData(KEY,search);
+  manager.add(new ControlContribution(KEY){
+   protected Control createControl(Composite parent){
+    Composite bar=new Composite(parent,SWT.NONE);bar.setData(KEY,search);GridLayout row=new GridLayout(1,false);row.marginWidth=0;row.marginHeight=0;bar.setLayout(row);
+    search.text=new Text(bar,SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL|SWT.BORDER);search.text.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
+    search.text.setMessage("Pesquisar projetos e arquivos…");search.status=new Label(bar,SWT.NONE);search.status.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
+    search.text.addModifyListener(e->search.changed());search.text.addListener(SWT.KeyDown,e->{if(e.keyCode==SWT.ESC){search.text.setText("");tree.setFocus();e.doit=false;}});
+    return bar;
+   }
+   protected int computeWidth(Control control){return 190;}
+  });
+  search.installFilter();tree.addListener(SWT.Dispose,e->{search.generation++;if(search.pending!=null)search.pending.cancel();});manager.update(true);
  }
  private void create(){
   Tree tree=viewer.getTree();Composite parent=tree.getParent();
@@ -66,10 +81,16 @@ public final class ExplorerSearch {
   text=new Text(bar,SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL|SWT.BORDER);text.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
   text.setMessage(pt()?(repository?"Pesquisar conexões por código ou nome…":"Pesquisar projetos, pastas e arquivos…"):(repository?"Search connections by code or name…":"Search projects, folders and files…"));
   text.setToolTipText(pt()?(repository?"Filtra bancos e conexões JasperServer. Ctrl+F: buscar no servidor.":"Pesquisa nomes e caminhos; não pesquisa o conteúdo dos arquivos."):"Search names and paths");
-  if(repository){Button button=new Button(bar,SWT.PUSH);button.setText(pt()?"Buscar no servidor…":"Search server…");button.addListener(SWT.Selection,e->{if(remoteSearch!=null)remoteSearch.run();});button.setEnabled(remoteSearch!=null);}
+  if(repository){Button button=new Button(bar,SWT.PUSH);button.setText(pt()?"Buscar em todos os servidores…":"Search all servers…");button.addListener(SWT.Selection,e->{if(remoteSearch!=null)remoteSearch.run();});button.setEnabled(remoteSearch!=null);}
   status=new Label(wrapper,SWT.NONE);status.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));status.moveAbove(tree);
   tree.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));tree.setData(KEY,this);wrapper.setData(KEY,this);
   bar.setBackground(tree.getBackground());wrapper.setBackground(tree.getBackground());text.setBackground(tree.getBackground());text.setForeground(tree.getForeground());status.setBackground(tree.getBackground());status.setForeground(tree.getForeground());
+  installFilter();
+  text.addModifyListener(e->changed());text.addListener(SWT.KeyDown,e->{if(e.keyCode==SWT.ESC){text.setText("");tree.setFocus();e.doit=false;}});
+  tree.addListener(SWT.Dispose,e->{generation++;if(pending!=null)pending.cancel();});
+  parent.layout(true,true);
+ }
+ private void installFilter(){
   viewer.addFilter(new ViewerFilter(){public boolean select(Viewer v,Object parent,Object element){
    if(query.isEmpty())return true;
    if(repository)return connectionMatches(element,query);
@@ -78,9 +99,6 @@ public final class ExplorerSearch {
    // hide an unadaptable virtual parent, as that also hides all matching files.
    return resource==null || resource.getFullPath().segmentCount()==0 || visiblePaths.contains(resource.getFullPath().toPortableString()) || ConnectionSearch.matches(resource.getFullPath().toPortableString(),query);
   }});
-  text.addModifyListener(e->changed());text.addListener(SWT.KeyDown,e->{if(e.keyCode==SWT.ESC){text.setText("");tree.setFocus();e.doit=false;}});
-  tree.addListener(SWT.Dispose,e->{generation++;if(pending!=null)pending.cancel();});
-  parent.layout(true,true);
  }
  static boolean connectionMatches(Object element,String query){
   for(Object node=element;node!=null;node=node instanceof ANode?((ANode)node).getParent():null){
@@ -160,20 +178,8 @@ public final class ExplorerSearch {
  }
  private static void openServerSearch(RepositoryView view,TreeViewer viewer){
   List<Object> nodes=servers(viewer);
-  if(nodes.isEmpty()){MessageDialog.openInformation(viewer.getTree().getShell(),"JasperStudio",pt()?"Nenhuma conexão JasperServer cadastrada.":"No JasperServer connections registered.");return;}
-  ElementListSelectionDialog dialog=new ElementListSelectionDialog(viewer.getTree().getShell(),new LabelProvider(){public String getText(Object node){return ((ANode)node).getDisplayText();}});
-  dialog.setTitle(pt()?"Pesquisar no JasperServer":"Search JasperServer");dialog.setMessage(pt()?"Escolha o servidor. A pesquisa será feita apenas nessa conexão.":"Choose the server to search.");dialog.setMultipleSelection(false);dialog.setElements(nodes.toArray());
-  if(dialog.open()!=org.eclipse.jface.window.Window.OK)return;
-  Object selected=dialog.getFirstResult();
-  try{
-   Field field=RepositoryView.class.getDeclaredField("rprovs");field.setAccessible(true);Object providers=field.get(view);
-   if(providers instanceof Iterable)for(Object provider:(Iterable<?>)providers)if(provider.getClass().getName().equals("com.jaspersoft.studio.server.ServerProvider")){
-    Class<?> job=Class.forName("com.jaspersoft.studio.server.wizard.find.FindResourceJob",true,provider.getClass().getClassLoader());
-    Object result=NativeServerSearch.open(job,selected);
-    if(result!=null){selectServer(viewer,selected);NativeServerSearch.reveal(job,provider,selected,result,viewer);}return;
-   }
-   throw new IllegalStateException("JasperServer search provider unavailable");
-  }catch(ReflectiveOperationException|RuntimeException error){Throwable cause=NativeServerSearch.cause(error);System.err.println("JasperStudio server search: "+cause);MessageDialog.openError(viewer.getTree().getShell(),"JasperStudio",(pt()?"Não foi possível abrir a pesquisa do JasperServer.\n":"Unable to open JasperServer search.\n")+cause.getClass().getSimpleName()+": "+String.valueOf(cause.getMessage()));}
+  if(nodes.isEmpty()){MessageDialog.openInformation(viewer.getTree().getShell(),"JasperStudio","Nenhuma conexão JasperServer cadastrada.");return;}
+  GlobalSearchDialog.show(view,viewer,nodes);
  }
  private static boolean pt(){return Locale.getDefault().getLanguage().equals("pt");}
 }

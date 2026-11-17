@@ -1,9 +1,19 @@
 package com.salutem.order;
 import java.lang.reflect.*;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 /** Uses the explicit-server API; it does not derive the server from tree selection. */
 public final class NativeServerSearch {
+ static Object client(Object server)throws ReflectiveOperationException{return server.getClass().getMethod("getWsClient").invoke(server);}
+ static boolean connect(Object server,IProgressMonitor monitor)throws ReflectiveOperationException{
+  if(monitor.isCanceled())return false;
+  Object client=client(server);
+  if(client==null)client=server.getClass().getMethod("getWsClient",IProgressMonitor.class).invoke(server,monitor);
+  if(monitor.isCanceled())return false;
+  if(client==null)throw new IllegalStateException("Não foi possível inicializar a conexão com o JasperServer.");
+  return true;
+ }
  static Object open(Class<?> job,Object server)throws ReflectiveOperationException{
   for(Method method:job.getMethods()){
    Class<?>[] p=method.getParameterTypes();

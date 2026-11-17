@@ -1,4 +1,16 @@
-﻿# Versão 2.3.1
+﻿# Versão 2.3.2
+
+- Inicializa a conexão nativa do servidor escolhido antes de abrir a pesquisa, corrigindo o acesso a getServerInfo quando getWsClient ainda é nulo.
+- A conexão ocorre com progresso e cancelamento, reutiliza o cliente existente e só consulta o servidor escolhido pelo usuário.
+- Inclui as correções 2.3.1 para os nós Java/MyReports e o isolamento dos filtros de projetos e repositórios.
+- Mantém o diagnóstico da causa interna de falhas de autenticação/rede.
+
+A pesquisa de conteúdo continua por servidor. Não há busca simultânea em todos os cadastros: os filtros locais pesquisam nomes/códigos das conexões e nomes/caminhos dos arquivos do workspace.
+
+Validação local: inicialização de cliente ausente, reutilização, cancelamento, filtros de MyReports Java, expansão/restauração e independência das árvores. O funcionamento com a autenticação e os servidores reais depende da validação após reiniciar o aplicativo.
+
+Feche o Studio e reinicie pelo Abrir JS.bat em Ordenacao-de-conexoes para carregar a correção instalada.
+# Versão 2.3.1
 
 - Corrige a filtragem de projetos Java/MyReports: resolve os recursos por trás dos nós JDT e preserva contêineres virtuais que não adaptam a IResource.
 - Expande os nós reais da árvore de projetos, incluindo wrappers Java, para revelar arquivos encontrados.

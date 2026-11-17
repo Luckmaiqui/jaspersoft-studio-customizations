@@ -8,10 +8,10 @@ Baixe em [Releases](https://github.com/Luckmaiqui/pacote-de-atualizacoes-do-jasp
 
 | ZIP | Pasta | Conteúdo |
 |---|---|---|
-| JS-Temas-v2.3.1.zip | Temas | Salutem Noite (azul), Grafite, Floresta (verde) e Ameixa (roxo) |
-| JS-Traducao-ptBR-v2.3.1.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
-| JS-Ordenacao-v2.3.1.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
-| JS-Pacotes-Separados-v2.3.1.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
+| JS-Temas-v2.4.0.zip | Temas | Salutem Noite (azul), Grafite, Floresta (verde) e Ameixa (roxo) |
+| JS-Traducao-ptBR-v2.4.0.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
+| JS-Ordenacao-v2.4.0.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
+| JS-Pacotes-Separados-v2.4.0.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
 
 Cada pasta tem **Instalar.bat** e **Abrir JS.bat** próprios. Você pode instalar apenas uma, duas ou todas. O pacote de temas não instala tradução nem muda o idioma. O pacote de tradução não instala nem seleciona tema. A ordenação também é independente.
 
@@ -59,4 +59,8 @@ A ordenação numérica também se aplica às conexões de banco de dados e Jasp
 
 ## Pesquisa nos exploradores
 
-Repositórios: filtro local de bancos e conexões JasperServer por código/nome. Projeto: filtro de nomes e caminhos de projetos/pastas/arquivos, em segundo plano. Ctrl+F no repositório ou Buscar no servidor permite escolher uma conexão e abrir sua pesquisa nativa sem seleção prévia. A versão não pesquisa todos os servidores em massa nem o conteúdo dos arquivos locais.
+Repositórios: filtro local de bancos e conexões JasperServer por código/nome. Projeto: filtro independente de nomes e caminhos, com campo na barra nativa da aba (a árvore CommonNavigator permanece intacta).
+
+Ctrl+F no repositório ou **Buscar em todos os servidores…** abre uma única janela. Digite pelo menos 3 caracteres e clique em Pesquisar. O escopo padrão consulta todos os JasperServers cadastrados, com no máximo 2 consultas simultâneas. A lista reúne nome, tipo, caminho e servidor de origem; a aba Conexões informa falhas individuais. Cancelar mantém os resultados recebidos. Selecione um arquivo e use **Localizar na árvore**.
+
+A busca usa nomes e descrições dos recursos pela API nativa autenticada do Studio. Não baixa o conteúdo de todos os relatórios nem pesquisa o texto dentro dos JRXMLs. Não executa consultas remotas enquanto você digita ou ao abrir o aplicativo. A duração depende da quantidade e disponibilidade dos servidores.
