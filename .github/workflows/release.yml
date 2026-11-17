@@ -3,7 +3,7 @@ on:
   push:
     tags: ['v*']
     branches: ['main']
-    paths: ['jasperstudio-update-v2.3.1.zip']
+    paths: ['jasperstudio-update-v2.3.2.zip']
   workflow_dispatch:
     inputs:
       version:
@@ -30,15 +30,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Import verified 2.3.1 update
-        if: github.ref_type == 'branch' && (github.event_name == 'push' || inputs.version == '2.3.1')
+      - name: Import verified 2.3.2 update
+        if: github.ref_type == 'branch' && (github.event_name == 'push' || inputs.version == '2.3.2')
         shell: pwsh
         run: |
-          $archive = 'jasperstudio-update-v2.3.1.zip'
-          if ((Get-FileHash $archive).Hash -ne '0D9502E8E3316DFBE5E249B41B538ECC52F6B8DF0148C36E6312AFB84746E6B9') { throw 'SHA256 inválido' }
+          $archive = 'jasperstudio-update-v2.3.2.zip'
+          if ((Get-FileHash $archive).Hash -ne 'B6DC5E3409681994CE816F42E551EBB9AE5B095D581A6CE1938B5247C77465C0') { throw 'SHA256 inválido' }
           $stage = Join-Path $env:RUNNER_TEMP 'source-update'
           Expand-Archive -LiteralPath $archive -DestinationPath $stage
-          git rm --ignore-unmatch artifacts/plugins/com.salutem.jasper.connectionorder_1.3.0.jar
+          git rm --ignore-unmatch artifacts/plugins/com.salutem.jasper.connectionorder_1.3.1.jar
           Get-ChildItem -LiteralPath $stage | Where-Object Name -notin @('.git','.github') | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination . -Recurse -Force }
           node scripts/Verify.mjs
           if ($LASTEXITCODE -ne 0) { throw 'Verificação falhou' }
@@ -47,7 +47,7 @@ jobs:
           git add --all -- ':!.github'
           git diff --cached --quiet
           if ($LASTEXITCODE -ne 0) {
-            git commit -m 'fix: preservar MyReports e usar pesquisa com servidor explícito'
+            git commit -m 'fix: conectar servidor antes da pesquisa nativa'
             git push origin HEAD:main
             if ($LASTEXITCODE -ne 0) { throw 'Push falhou' }
           }
