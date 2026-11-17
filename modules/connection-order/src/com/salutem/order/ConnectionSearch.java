@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import com.jaspersoft.studio.data.DataAdapterDescriptor;
+import com.jaspersoft.studio.data.widget.DataAdapterAction;
+import org.eclipse.jface.action.ActionContributionItem;
+import java.lang.reflect.Field;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -38,6 +41,31 @@ public final class ConnectionSearch {
   for(String term:normalize(query).strip().split("\\s+"))if(!value.contains(term))return false;
   return true;
  }
+ // The native menu belongs to a toolbar action. Focus may still be in the SQL
+ // editor or a preview parameter, so it cannot be used as the dropdown anchor.
+ static ToolItem findButton(Composite root,Menu menu) {
+  for(Control child:root.getChildren()) {
+   if(child instanceof ToolBar)for(ToolItem item:((ToolBar)child).getItems()) {
+    Object contribution=item.getData();
+    if(contribution instanceof ActionContributionItem) {
+     Object action=((ActionContributionItem)contribution).getAction();
+     if(action instanceof DataAdapterAction)try {
+      Field field=DataAdapterAction.class.getDeclaredField("listMenu");field.setAccessible(true);
+      if(field.get(action)==menu)return item;
+     }catch(ReflectiveOperationException ignored){/* Version guard pins the supported action. */}
+    }
+   }
+   if(child instanceof Composite){ToolItem found=findButton((Composite)child,menu);if(found!=null)return found;}
+  }
+  return null;
+ }
+ static Rectangle place(Rectangle button,Rectangle area,int preferredWidth,int preferredHeight) {
+  int width=Math.min(preferredWidth,area.width),height=Math.min(preferredHeight,area.height);
+  int below=button.y+button.height;
+  int y=below+height<=area.y+area.height?below:button.y-height;
+  return new Rectangle(Math.max(area.x,Math.min(button.x,area.x+area.width-width)),
+   Math.max(area.y,Math.min(y,area.y+area.height-height)),width,height);
+ }
  void open(Menu menu) {
   if(menu.isDisposed())return;
   if(popup!=null && !popup.isDisposed())popup.dispose();
@@ -45,13 +73,13 @@ public final class ConnectionSearch {
   for(MenuItem item:menu.getItems())if((item.getStyle()&SWT.SEPARATOR)==0 && item.getMenu()==null)source.add(item);
   if(source.isEmpty())return;
   Display display=menu.getDisplay();Shell owner=menu.getShell();
+  ToolItem button=findButton(owner,menu);
   Point position=display.getCursorLocation();
-  Control focus=display.getFocusControl();
-  if(focus!=null && !focus.isDisposed()) {
-   Rectangle bounds=focus.getBounds();Point anchor=focus.toDisplay(0,bounds.height);
-   // Keyboard activation has no pointer anchor over the focused control.
-   Point origin=focus.toDisplay(0,0);
-   if(!new Rectangle(origin.x,origin.y,bounds.width,bounds.height).contains(position))position=anchor;
+  Rectangle anchor=new Rectangle(position.x,position.y,0,0);
+  Monitor monitor=owner.getMonitor();
+  if(button!=null) {
+   Rectangle bounds=button.getBounds();Point origin=button.getParent().toDisplay(bounds.x,bounds.y);
+   anchor=new Rectangle(origin.x,origin.y,bounds.width,bounds.height);monitor=button.getParent().getMonitor();
   }
   menu.setVisible(false);
   Shell window=new Shell(owner,SWT.ON_TOP|SWT.TOOL|SWT.RESIZE);
@@ -104,9 +132,8 @@ public final class ConnectionSearch {
   Listener originalDisposed=e->{if(!window.isDisposed())window.dispose();};
   menu.addListener(SWT.Dispose,originalDisposed);
   window.addListener(SWT.Dispose,e->{if(!menu.isDisposed())menu.removeListener(SWT.Dispose,originalDisposed);if(popup==window)popup=null;});
-  filter.run();Rectangle area=owner.getMonitor().getClientArea();
-  int width=Math.min(700,area.width),height=Math.min(450,area.height);
-  window.setBounds(Math.max(area.x,Math.min(position.x,area.x+area.width-width)),Math.max(area.y,Math.min(position.y,area.y+area.height-height)),width,height);
+  filter.run();
+  window.setBounds(place(anchor,monitor.getClientArea(),700,450));
   window.open();search.setFocus();
  }
  private boolean pt(){return Locale.getDefault().getLanguage().equals("pt");}

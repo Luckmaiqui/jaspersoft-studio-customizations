@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Salutem - Connection Search and Numeric Order
 Bundle-SymbolicName: com.salutem.jasper.connectionorder;singleton:=true
-Bundle-Version: 1.1.0
+Bundle-Version: 1.1.1
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.eclipse.ui,org.eclipse.swt,
  com.jaspersoft.studio;bundle-version="[6.20.6,6.20.7)"

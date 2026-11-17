@@ -1,4 +1,13 @@
-﻿# Versão 2.1.0
+﻿# Versão 2.1.1
+
+- Corrige a posição da pesquisa de conexões no preview e no dataset: abre abaixo do botão original, sem depender do foco do editor ou do cursor.
+- Se não houver espaço abaixo, abre acima, respeitando o monitor do botão e os limites da tela.
+- Mantém filtros por código/nome, ordenação numérica, seleção e cancelamento.
+
+Atualize apenas a pasta Ordenacao-de-conexoes. Reinicie o Studio pelo Abrir JS.bat dessa pasta.
+
+Validado com botão SWT e DataAdapterAction reais, vínculo ao menu original, coordenadas abaixo do botão, limites inferior/direito e monitor com coordenadas negativas. Testes anteriores de pesquisa e identidade continuam passando.
+# Versão 2.1.0
 
 - Campo de pesquisa nos seletores de conexões usados pelo preview e pelo dataset.
 - Filtro por código e nome, sem diferenciar acentos ou maiúsculas; permite múltiplos termos.

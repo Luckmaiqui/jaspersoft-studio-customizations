@@ -1,17 +1,17 @@
-﻿# Jaspersoft Studio Customizations
+﻿# Pacote de Atualizações do JasperStudio
 
 Complementos independentes para **Jaspersoft Studio Community 6.20.6 no Windows, Java 17+**.
 
 ## Escolha o que instalar
 
-Baixe em [Releases](https://github.com/Luckmaiqui/jaspersoft-studio-customizations/releases):
+Baixe em [Releases](https://github.com/Luckmaiqui/pacote-de-atualizacoes-do-jasperstudio/releases):
 
 | ZIP | Pasta | Conteúdo |
 |---|---|---|
-| JS-Temas-v2.1.0.zip | Temas | Salutem Noite (azul), Grafite, Floresta (verde) e Ameixa (roxo) |
-| JS-Traducao-ptBR-v2.1.0.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
-| JS-Ordenacao-v2.1.0.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
-| JS-Pacotes-Separados-v2.1.0.zip | Tradução e Tema JS | As três pastas acima, com instaladores separados |
+| JS-Temas-v2.1.1.zip | Temas | Salutem Noite (azul), Grafite, Floresta (verde) e Ameixa (roxo) |
+| JS-Traducao-ptBR-v2.1.1.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
+| JS-Ordenacao-v2.1.1.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
+| JS-Pacotes-Separados-v2.1.1.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
 
 Cada pasta tem **Instalar.bat** e **Abrir JS.bat** próprios. Você pode instalar apenas uma, duas ou todas. O pacote de temas não instala tradução nem muda o idioma. O pacote de tradução não instala nem seleciona tema. A ordenação também é independente.
 

@@ -1,4 +1,4 @@
-#Requires -Version 7.0
+﻿#Requires -Version 7.0
 [CmdletBinding()]
 param([string]$StudioPath,[switch]$PackageOnly)
 $ErrorActionPreference='Stop'
@@ -91,7 +91,7 @@ if(-not $PackageOnly){
 }
 $snapshot=Get-Content -LiteralPath (Join-Path $root 'artifacts/index.json') -Raw|ConvertFrom-Json
 $stage=Join-Path $root ('build/package-'+[guid]::NewGuid())
-$package=Join-Path $stage 'Tradução e Tema JS'
+$package=Join-Path $stage 'Pacote de Atualizações do JasperStudio'
 New-Item -ItemType Directory -Force -Path $package,(Join-Path $root 'dist')|Out-Null
 $utf8=New-Object Text.UTF8Encoding($true)
 $archives=@()

@@ -114,6 +114,6 @@ try {
 } catch {
     if($ValidateOnly){Write-Error $_;exit 1}
     Add-Type -AssemblyName System.Windows.Forms
-    [Windows.Forms.MessageBox]::Show($_.Exception.Message,'Tradução e Tema JS','OK','Error')|Out-Null
+    [Windows.Forms.MessageBox]::Show($_.Exception.Message,'Pacote de Atualizações do JasperStudio','OK','Error')|Out-Null
     exit 1
 }

@@ -4,7 +4,11 @@ import org.eclipse.swt.widgets.*;
 import com.jaspersoft.studio.data.noda.NoDataAdapterDescriptor;
 
 public class CheckConnectionSearch {
- public static void main(String[]args) {
+ public static void main(String[]args)throws Exception {
+  org.eclipse.swt.graphics.Rectangle above=ConnectionSearch.place(new org.eclipse.swt.graphics.Rectangle(900,700,100,30),new org.eclipse.swt.graphics.Rectangle(0,0,1000,800),700,450);
+  if(above.x!=300 || above.y!=250)throw new AssertionError("Limites inferior/direito");
+  org.eclipse.swt.graphics.Rectangle negative=ConnectionSearch.place(new org.eclipse.swt.graphics.Rectangle(-1800,50,100,30),new org.eclipse.swt.graphics.Rectangle(-1920,0,1920,1080),700,450);
+  if(negative.x!=-1800 || negative.y!=80)throw new AssertionError("Monitor com coordenadas negativas");
   if(!ConnectionSearch.matches("(014) São José - Hospital","014 sao"))throw new AssertionError("Código/acentos");
   if(ConnectionSearch.matches("(014) São José","001"))throw new AssertionError("Filtro incorreto");
   Display d=new Display();Shell owner=new Shell(d);
@@ -14,11 +18,19 @@ public class CheckConnectionSearch {
    MenuItem a=new MenuItem(menu,SWT.CHECK);a.setText("(001) São José");a.setData("da.key",first);
    MenuItem b=new MenuItem(menu,SWT.CHECK);b.setText("(014) São José");b.setData("da.key",second);
    for(MenuItem item:menu.getItems())item.addListener(SWT.Selection,e->{selected[0]=e.widget.getData("da.key");calls[0]++;});
+   ToolBar toolbar=new ToolBar(owner,SWT.NONE);toolbar.setBounds(40,30,300,35);
+   ToolItem button=new ToolItem(toolbar,SWT.DROP_DOWN);button.setText("Conexão");
+   com.jaspersoft.studio.data.widget.DataAdapterAction action=new com.jaspersoft.studio.data.widget.DataAdapterAction(null,new com.jaspersoft.studio.data.storage.ADataAdapterStorage[0]);
+   java.lang.reflect.Field listMenu=action.getClass().getDeclaredField("listMenu");listMenu.setAccessible(true);listMenu.set(action,menu);
+   button.setData(new org.eclipse.jface.action.ActionContributionItem(action));
+   if(ConnectionSearch.findButton(owner,menu)!=button)throw new AssertionError("Não identificou o botão original");
    if(!ConnectionSearch.isAdapterMenu(menu))throw new AssertionError("Menu de conexões não reconhecido");
    Menu other=new Menu(owner,SWT.POP_UP);new MenuItem(other,SWT.PUSH).setText("Outra opção");
    if(ConnectionSearch.isAdapterMenu(other))throw new AssertionError("Interceptou menu não relacionado");
    ConnectionSearch picker=new ConnectionSearch();picker.open(menu);
    Shell popup=last(d,owner);Text search=(Text)popup.getChildren()[0];Table rows=(Table)popup.getChildren()[1];
+   org.eclipse.swt.graphics.Rectangle buttonBounds=button.getBounds();org.eclipse.swt.graphics.Point expected=toolbar.toDisplay(buttonBounds.x,buttonBounds.y+buttonBounds.height);
+   if(popup.getLocation().x!=expected.x || popup.getLocation().y!=expected.y)throw new AssertionError("Pesquisa distante do botão");
    search.setText("014 sao");if(rows.getItemCount()!=1)throw new AssertionError("Filtro");
    search.notifyListeners(SWT.DefaultSelection,new Event());
    if(selected[0]!=second || calls[0]!=1 || !popup.isDisposed())throw new AssertionError("Identidade/evento da seleção");
