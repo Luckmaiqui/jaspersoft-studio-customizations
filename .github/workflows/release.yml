@@ -3,7 +3,7 @@ on:
   push:
     tags: ['v*']
     branches: ['main']
-    paths: ['jasperstudio-update-v2.1.1.zip']
+    paths: ['jasperstudio-update-v2.2.0.zip']
   workflow_dispatch:
     inputs:
       version:
@@ -30,15 +30,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Import verified 2.1.1 update
-        if: github.ref_type == 'branch' && (github.event_name == 'push' || inputs.version == '2.1.1')
+      - name: Import verified 2.2.0 update
+        if: github.ref_type == 'branch' && (github.event_name == 'push' || inputs.version == '2.2.0')
         shell: pwsh
         run: |
-          $archive = 'jasperstudio-update-v2.1.1.zip'
-          if ((Get-FileHash $archive).Hash -ne '1EC461028FA88B0ED452A8ECDEA38BD8043E2C2C5D33E7D788CE21E40BCE90EE') { throw 'SHA256 inválido' }
+          $archive = 'jasperstudio-update-v2.2.0.zip'
+          if ((Get-FileHash $archive).Hash -ne '93670E481F59F304519F42E374795C90D5D07C493710B1987D27C2124494D18C') { throw 'SHA256 inválido' }
           $stage = Join-Path $env:RUNNER_TEMP 'source-update'
           Expand-Archive -LiteralPath $archive -DestinationPath $stage
-          git rm --ignore-unmatch artifacts/plugins/com.salutem.jasper.connectionorder_1.1.0.jar
+          git rm --ignore-unmatch artifacts/plugins/com.salutem.jasper.connectionorder_1.1.1.jar
           Get-ChildItem -LiteralPath $stage | Where-Object Name -notin @('.git','.github') | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination . -Recurse -Force }
           node scripts/Verify.mjs
           if ($LASTEXITCODE -ne 0) { throw 'Verificação falhou' }
@@ -47,7 +47,7 @@ jobs:
           git add --all -- ':!.github'
           git diff --cached --quiet
           if ($LASTEXITCODE -ne 0) {
-            git commit -m 'fix: publicar pesquisa ancorada ao botão e novo nome do pacote'
+            git commit -m 'feat: ordenar bancos e JasperServer no explorador'
             git push origin HEAD:main
             if ($LASTEXITCODE -ne 0) { throw 'Push falhou' }
           }
