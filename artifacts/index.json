@@ -1,19 +1,19 @@
 {
   "schema": 1,
   "versions": {
-    "packageVersion": "2.0.0",
+    "packageVersion": "2.1.0",
     "studioVersion": "6.20.6.final",
     "javaMinimum": 17,
     "theme": "2.0.0",
     "language": "2.0.2",
-    "connectionOrder": "1.0.0",
+    "connectionOrder": "1.1.0",
     "translationFragments": "2.0.0"
   },
-  "sourceDigest": "7bd79aada0543f6433314948bfa69d6599398116847bc85ab50bcdf471231b74",
+  "sourceDigest": "3d82e2e1d190ff6d7765fbbc102c94f14a8b07e755036b60c1fc0447a822c25e",
   "files": [
     {
-      "path": "artifacts/plugins/com.salutem.jasper.connectionorder_1.0.0.jar",
-      "sha256": "76131a48ead35708a50d155e5e86d47d1e22dd5ef38eaf0d3473cd6a144d661d"
+      "path": "artifacts/plugins/com.salutem.jasper.connectionorder_1.1.0.jar",
+      "sha256": "e191ebfd4f7d1df0fe7267b0e262d5a2ff5e2fe31e86a54e14fbef7e11c01988"
     },
     {
       "path": "artifacts/plugins/com.salutem.jasper.language.pt_BR_2.0.2.jar",

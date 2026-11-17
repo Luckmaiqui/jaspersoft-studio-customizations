@@ -8,10 +8,10 @@ Baixe em [Releases](https://github.com/Luckmaiqui/jaspersoft-studio-customizatio
 
 | ZIP | Pasta | Conteúdo |
 |---|---|---|
-| JS-Temas-v2.0.0.zip | Temas | Salutem Noite (azul), Grafite, Floresta (verde) e Ameixa (roxo) |
-| JS-Traducao-ptBR-v2.0.0.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
-| JS-Ordenacao-v2.0.0.zip | Ordenacao-de-conexoes | Ordenação numérica dos adaptadores |
-| JS-Pacotes-Separados-v2.0.0.zip | Tradução e Tema JS | As três pastas acima, com instaladores separados |
+| JS-Temas-v2.1.0.zip | Temas | Salutem Noite (azul), Grafite, Floresta (verde) e Ameixa (roxo) |
+| JS-Traducao-ptBR-v2.1.0.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
+| JS-Ordenacao-v2.1.0.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
+| JS-Pacotes-Separados-v2.1.0.zip | Tradução e Tema JS | As três pastas acima, com instaladores separados |
 
 Cada pasta tem **Instalar.bat** e **Abrir JS.bat** próprios. Você pode instalar apenas uma, duas ou todas. O pacote de temas não instala tradução nem muda o idioma. O pacote de tradução não instala nem seleciona tema. A ordenação também é independente.
 
@@ -51,3 +51,6 @@ A saída contém quatro ZIPs e SHA256SUMS.txt em `dist/`. O workflow Release pub
 Veja [instalação](docs/INSTALACAO.md), [desenvolvimento](docs/DESENVOLVIMENTO.md) e [avisos de terceiros](THIRD_PARTY_NOTICES.md).
 
 Personalizações preparadas para Luckas / Salutem. Não é produto oficial Jaspersoft/Eclipse. A licença dos arquivos próprios ainda deve ser definida pelo titular; o repositório não declara licença aberta para eles.
+## Pesquisa de conexões
+
+Instale o pacote Ordenacao-de-conexoes atualizado. Ao abrir a lista de adaptadores no preview ou no dataset, digite o código ou parte do nome. A pesquisa ignora maiúsculas e acentos e aceita vários termos. Use as setas e Enter, clique em uma opção ou pressione Esc para cancelar. Não altera credenciais, consultas nem executa pesquisa no servidor; filtra somente os rótulos das conexões disponíveis.

@@ -1,4 +1,16 @@
-﻿# Versão 2.0.0
+﻿# Versão 2.1.0
+
+- Campo de pesquisa nos seletores de conexões usados pelo preview e pelo dataset.
+- Filtro por código e nome, sem diferenciar acentos ou maiúsculas; permite múltiplos termos.
+- Seleção com mouse, setas e Enter; Esc cancela sem trocar a conexão.
+- Mantém os eventos e os objetos originais dos adaptadores, as opções auxiliares e a ordenação numérica.
+- Pesquisa local nos rótulos; não consulta bancos nem altera credenciais ou relatórios.
+- Atualiza somente o complemento de conexões para 1.1.0. Tema e tradução mantêm seus binários.
+
+Instalação: feche o Studio e execute Instalar.bat na pasta Ordenacao-de-conexoes. Reinicie pelo Abrir JS.bat dessa pasta. Temas e tradução continuam independentes.
+
+Compatibilidade: Jaspersoft Studio Community 6.20.6, Windows, Java 17+. Testes com SWT real cobrem filtros, acentos, identidade da conexão, eventos originais, ausência de resultados, cancelamento e descarte do popup. A integração no aplicativo completo deve ser conferida após reiniciar.
+# Versão 2.0.0
 
 - Instaladores independentes para temas, tradução pt-BR e ordenação de conexões.
 - Quatro temas: Salutem Noite, Grafite, Floresta e Ameixa.

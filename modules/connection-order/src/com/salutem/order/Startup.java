@@ -5,6 +5,7 @@ public final class Startup implements IStartup {
  private final NumericOrder comparator=new NumericOrder();private Field storagesField,descriptorsField;private boolean reported;
  private final Set<ADataAdapterStorage> observed=Collections.newSetFromMap(new WeakHashMap<>());
  public void earlyStartup(){Display display=Display.getDefault();display.asyncExec(()->{
+  new ConnectionSearch().install(display);
   try{
    storagesField=DataAdapterManager.class.getDeclaredField("storages");storagesField.setAccessible(true);
    descriptorsField=ADataAdapterStorage.class.getDeclaredField("daDescriptors");descriptorsField.setAccessible(true);
