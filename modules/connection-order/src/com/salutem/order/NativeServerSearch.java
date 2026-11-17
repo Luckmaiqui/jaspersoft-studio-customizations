@@ -1,0 +1,25 @@
+package com.salutem.order;
+import java.lang.reflect.*;
+import org.eclipse.jface.viewers.TreeViewer;
+
+/** Uses the explicit-server API; it does not derive the server from tree selection. */
+public final class NativeServerSearch {
+ static Object open(Class<?> job,Object server)throws ReflectiveOperationException{
+  for(Method method:job.getMethods()){
+   Class<?>[] p=method.getParameterTypes();
+   if(method.getName().equals("doFindResource") && Modifier.isStatic(method.getModifiers()) && p.length==3 && p[0].isInstance(server) && p[1]==String[].class && p[2]==String[].class)
+    return method.invoke(null,new Object[]{server,null,null});
+  }
+  throw new NoSuchMethodException("doFindResource(server, String[], String[])");
+ }
+ static void reveal(Class<?> job,Object provider,Object server,Object result,TreeViewer viewer)throws ReflectiveOperationException{
+  for(Method method:job.getDeclaredMethods()){
+   Class<?>[] p=method.getParameterTypes();
+   if(method.getName().equals("selectResource") && Modifier.isStatic(method.getModifiers()) && p.length==4 && p[0].isInstance(provider) && p[1].isInstance(server) && p[2].isInstance(result) && p[3].isInstance(viewer)){
+    method.setAccessible(true);method.invoke(null,provider,server,result,viewer);return;
+   }
+  }
+  throw new NoSuchMethodException("selectResource(provider, server, result, viewer)");
+ }
+ static Throwable cause(Throwable error){while((error instanceof InvocationTargetException || error instanceof ExceptionInInitializerError) && error.getCause()!=null)error=error.getCause();return error;}
+}

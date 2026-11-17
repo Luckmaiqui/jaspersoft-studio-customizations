@@ -74,7 +74,9 @@ public final class ExplorerSearch {
    if(query.isEmpty())return true;
    if(repository)return connectionMatches(element,query);
    IResource resource=resource(element);
-   return resource!=null?visiblePaths.contains(resource.getFullPath().toPortableString()):ConnectionSearch.matches(label(viewer,element),query);
+   // JDT and working-set providers can wrap the workspace resources. Never
+   // hide an unadaptable virtual parent, as that also hides all matching files.
+   return resource==null || resource.getFullPath().segmentCount()==0 || visiblePaths.contains(resource.getFullPath().toPortableString()) || ConnectionSearch.matches(resource.getFullPath().toPortableString(),query);
   }});
   text.addModifyListener(e->changed());text.addListener(SWT.KeyDown,e->{if(e.keyCode==SWT.ESC){text.setText("");tree.setFocus();e.doit=false;}});
   tree.addListener(SWT.Dispose,e->{generation++;if(pending!=null)pending.cancel();});
@@ -86,8 +88,16 @@ public final class ExplorerSearch {
   }
   return true; // Keep category headings; never traverse a server to find descendants.
  }
- private static IResource resource(Object node){if(node instanceof IResource)return (IResource)node;return node instanceof IAdaptable?((IAdaptable)node).getAdapter(IResource.class):null;}
- private static String label(TreeViewer viewer,Object node){IBaseLabelProvider p=viewer.getLabelProvider();return p instanceof ILabelProvider?((ILabelProvider)p).getText(node):String.valueOf(node);}
+ static IResource resource(Object node){
+  if(node instanceof IResource)return (IResource)node;
+  if(node instanceof IAdaptable){IResource resource=((IAdaptable)node).getAdapter(IResource.class);if(resource!=null)return resource;}
+  // IJavaProject/IJavaElement expose getResource(), but do not necessarily
+  // adapt to IResource through getAdapter(IResource.class).
+  if(node!=null)for(String method:new String[]{"getResource","getProject"})try{
+   Method getter=node.getClass().getMethod(method);Object value=getter.invoke(node);if(value instanceof IResource)return (IResource)value;
+  }catch(ReflectiveOperationException ignored){ }
+  return null;
+ }
  private void changed(){
   int token=++generation;if(pending!=null)pending.cancel();
   String requested=text.getText().strip();
@@ -120,11 +130,18 @@ public final class ExplorerSearch {
      if(text.isDisposed() || generation!=token)return;
      visiblePaths=result;query=requested;viewer.refresh(false);
      // Expand only ancestor paths of matching local resources, with a cap for broad filters.
-     if(result.size()<=500)for(String path:result){IResource r=root.findMember(new Path(path));if(r instanceof IContainer)viewer.setExpandedState(r,true);}
+     if(result.size()<=500)expandMatches(viewer.getTree().getItems(),result,new int[]{500});
      status.setText(count[0]+(pt()?" itens encontrados":" items found"));
     });return Status.OK_STATUS;
    }
   };pending.setSystem(true);pending.schedule();
+ }
+ private void expandMatches(TreeItem[] items,Set<String> paths,int[] budget){
+  for(TreeItem item:items){if(budget[0]--<=0)return;Object node=item.getData();IResource r=resource(node);
+   if((r instanceof IContainer && paths.contains(r.getFullPath().toPortableString())) || node instanceof IWorkingSet){
+    viewer.setExpandedState(node,true);if(!item.isDisposed())expandMatches(item.getItems(),paths,budget);
+   }
+  }
  }
  static List<Object> servers(TreeViewer viewer){
   List<Object> nodes=new ArrayList<>();
@@ -152,11 +169,11 @@ public final class ExplorerSearch {
    Field field=RepositoryView.class.getDeclaredField("rprovs");field.setAccessible(true);Object providers=field.get(view);
    if(providers instanceof Iterable)for(Object provider:(Iterable<?>)providers)if(provider.getClass().getName().equals("com.jaspersoft.studio.server.ServerProvider")){
     Class<?> job=Class.forName("com.jaspersoft.studio.server.wizard.find.FindResourceJob",true,provider.getClass().getClassLoader());
-    Method find=job.getMethod("doFindResource",provider.getClass(),TreeViewer.class);
-    selectServer(viewer,selected);find.invoke(null,provider,viewer);return;
+    Object result=NativeServerSearch.open(job,selected);
+    if(result!=null){selectServer(viewer,selected);NativeServerSearch.reveal(job,provider,selected,result,viewer);}return;
    }
    throw new IllegalStateException("JasperServer search provider unavailable");
-  }catch(ReflectiveOperationException|RuntimeException error){MessageDialog.openError(viewer.getTree().getShell(),"JasperStudio",pt()?"Não foi possível abrir a pesquisa do JasperServer. "+error.getClass().getSimpleName():"Unable to open JasperServer search: "+error.getClass().getSimpleName());}
+  }catch(ReflectiveOperationException|RuntimeException error){Throwable cause=NativeServerSearch.cause(error);System.err.println("JasperStudio server search: "+cause);MessageDialog.openError(viewer.getTree().getShell(),"JasperStudio",(pt()?"Não foi possível abrir a pesquisa do JasperServer.\n":"Unable to open JasperServer search.\n")+cause.getClass().getSimpleName()+": "+String.valueOf(cause.getMessage()));}
  }
  private static boolean pt(){return Locale.getDefault().getLanguage().equals("pt");}
 }

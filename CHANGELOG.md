@@ -1,4 +1,17 @@
-﻿# Versão 2.3.0
+﻿# Versão 2.3.1
+
+- Corrige a filtragem de projetos Java/MyReports: resolve os recursos por trás dos nós JDT e preserva contêineres virtuais que não adaptam a IResource.
+- Expande os nós reais da árvore de projetos, incluindo wrappers Java, para revelar arquivos encontrados.
+- Testa explicitamente filtros simultâneos e independentes de projetos e repositórios.
+- A pesquisa do JasperServer usa a API com servidor explícito, sem obter a conexão da seleção da árvore.
+- Mantém o encaminhamento do recurso escolhido para o explorador e mostra a causa interna das falhas da API nativa.
+
+Esta versão continua pesquisando o conteúdo remoto de um servidor escolhido. Não há pesquisa global simultânea em todos os servidores. Esse recurso exigiria um agregador próprio com limites de paralelismo, cancelamento, paginação, autenticação e resultados identificados por servidor. Nenhuma consulta em massa foi executada.
+
+Validação: modelos de conexão reais e controles SWT, projeto Java simulado com a interface IJavaProject, MyReports inicialmente recolhido, filtro profundo, restauração, isolamento entre as duas árvores e contrato da API remota com implementação simulada. A autenticação e abertura da pesquisa nos servidores reais precisam ser verificadas no aplicativo.
+
+Feche o Studio, atualize somente JS-Ordenacao e abra por Abrir JS.bat em Ordenacao-de-conexoes.
+# Versão 2.3.0
 
 - Barra de pesquisa no Explorador de repositórios: filtra nomes/códigos das conexões de bancos e JasperServer, mostrando os dois grupos.
 - Barra de pesquisa no Explorador de projeto: pesquisa nomes e caminhos de projetos, pastas e arquivos do workspace, em segundo plano, com cancelamento de pesquisas antigas.

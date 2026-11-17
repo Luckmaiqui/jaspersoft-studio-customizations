@@ -4,8 +4,15 @@ import org.eclipse.swt.SWT;import org.eclipse.swt.widgets.*;import org.eclipse.s
 import org.eclipse.jface.viewers.*;import org.eclipse.core.resources.*;import org.eclipse.core.runtime.Path;
 import com.jaspersoft.studio.data.*;import com.jaspersoft.studio.data.noda.NoDataAdapterDescriptor;
 import com.jaspersoft.studio.server.model.server.*;import com.jaspersoft.studio.utils.jasper.JasperReportsConfiguration;
+import org.eclipse.jdt.core.IJavaProject;
 
 public class CheckExplorerSearch {
+ public static final class NativeAPI {
+  static Object selected,result=new Object();static int reveals;
+  public static Object doFindResource(MServerProfile server,String[] include,String[] exclude){selected=server;return result;}
+  public static void doFindResource(Object provider,TreeViewer viewer){throw new AssertionError("Não usar a API dependente da seleção da árvore");}
+  private static void selectResource(Object provider,MServerProfile server,Object resource,TreeViewer viewer){if(server!=selected || resource!=result)throw new AssertionError("Resultado errado");reveals++;}
+ }
  static MDataAdapter adapter(String name){return new MDataAdapter(null,new NoDataAdapterDescriptor(){public String getTitle(){return name;}});}
  static MServerProfile server(String name){ServerProfile p=new ServerProfile();p.setName(name);return new MServerProfile(null,p){public JasperReportsConfiguration getJasperConfiguration(){return null;}};}
  static TreeViewer viewer(Composite parent,Object input,Map<Object,List<Object>> nodes){
@@ -18,7 +25,7 @@ public class CheckExplorerSearch {
  static Label status(TreeViewer v){for(Control c:v.getTree().getParent().getChildren())if(c instanceof Label)return (Label)c;throw new AssertionError("Status ausente");}
  static void pump(Display d,BooleanSupplier done){long timeout=System.currentTimeMillis()+5000;while(!done.getAsBoolean() && System.currentTimeMillis()<timeout)if(!d.readAndDispatch())try{Thread.sleep(5);}catch(InterruptedException e){throw new AssertionError(e);}if(!done.getAsBoolean())throw new AssertionError("Timeout da busca");}
  static void waitUI(Display d,int millis){long end=System.currentTimeMillis()+millis;while(System.currentTimeMillis()<end)if(!d.readAndDispatch())try{Thread.sleep(5);}catch(InterruptedException e){throw new AssertionError(e);}}
- public static void main(String[]args){
+ public static void main(String[]args)throws Exception{
   Display d=new Display();Shell shell=new Shell(d);shell.setLayout(new FillLayout());shell.setSize(1200,700);
   try{
    Composite left=new Composite(shell,SWT.NONE);left.setLayout(new FillLayout());Composite right=new Composite(shell,SWT.NONE);right.setLayout(new FillLayout());
@@ -57,11 +64,24 @@ public class CheckExplorerSearch {
    });
    IResource project=resources.get("/Projeto"),folder=resources.get("/Projeto/Relatorios"),match=resources.get("/Projeto/Relatorios/Ficha Padrão.jrxml"),other=resources.get("/Projeto/Relatorios/Outro.jrxml");
    projectNodes.put(workspace,List.of(project));projectNodes.put(project,List.of(folder));projectNodes.put(folder,List.of(match,other));
-   TreeViewer projects=viewer(right,workspace,projectNodes);projects.setSelection(new StructuredSelection(other));ExplorerSearch.attach(projects,false,null,()->workspace);Text projectField=search(projects);
+   IJavaProject javaProject=(IJavaProject)Proxy.newProxyInstance(CheckExplorerSearch.class.getClassLoader(),new Class[]{IJavaProject.class},(proxy,method,a)->{
+    switch(method.getName()){case "getResource":case "getProject":return project;case "getElementName":return "MyReports";case "getAdapter":return null;case "equals":return proxy==a[0];case "hashCode":return System.identityHashCode(proxy);case "toString":return "MyReports";}
+    return method.getReturnType()==boolean.class?false:method.getReturnType()==int.class?0:null;
+   });
+   if(ExplorerSearch.resource(javaProject)!=project)throw new AssertionError("Projeto Java não adaptado");
+   projectNodes.put(workspace,List.of(javaProject));projectNodes.put(javaProject,List.of(folder));projectNodes.remove(project);
+   TreeViewer projects=viewer(right,workspace,projectNodes);projects.setSelection(new StructuredSelection(other));ExplorerSearch.attach(projects,false,null,()->workspace);Text projectField=search(projects);projects.collapseAll();ISelection selectionBefore=projects.getSelection();
+   field.setText("014");waitUI(d,350);
    projectField.setText("ficha padrao");pump(d,()->status(projects).getText().contains("1 "));
    TreeItem files=projects.getTree().getItem(0).getItem(0);if(files.getItemCount()!=1 || files.getItem(0).getData()!=match)throw new AssertionError("Arquivo e ancestrais");
+   if(!field.getText().equals("014") || groups[0].getItemCount()!=1 || groups[1].getItemCount()!=1)throw new AssertionError("Filtro de projeto alterou repositório");
+   repo.setSelection(StructuredSelection.EMPTY);Object found=NativeServerSearch.open(NativeAPI.class,server2);
+   if(NativeAPI.selected!=server2 || !repo.getSelection().isEmpty() || !field.getText().equals("014") || !projectField.getText().equals("ficha padrao"))throw new AssertionError("Busca nativa dependeu da árvore ou alterou filtros");
+   NativeServerSearch.reveal(NativeAPI.class,new Object(),server2,found,repo);if(NativeAPI.reveals!=1)throw new AssertionError("Não encaminhou resultado");
+   Throwable real=new ClassCastException("causa real");if(NativeServerSearch.cause(new InvocationTargetException(new InvocationTargetException(real)))!=real)throw new AssertionError("Exceção externa não desembrulhada");
    projectField.setText("inexistente");projectField.setText("outro");pump(d,()->status(projects).getText().contains("1 ") && files.getItemCount()==1 && files.getItem(0).getData()==other);
-   projectField.setText("");if(projects.getStructuredSelection().getFirstElement()!=other || files.getItemCount()!=2)throw new AssertionError("Restauração do projeto");
+   projectField.setText("");if(!projects.getSelection().equals(selectionBefore) || projects.getTree().getItemCount()!=1)throw new AssertionError("Restauração do projeto");
+   if(!field.getText().equals("014") || groups[0].getItemCount()!=1 || groups[1].getItemCount()!=1)throw new AssertionError("Limpar projeto alterou repositório");
    if(visits.get()>8 || remote.get()!=2)throw new AssertionError("Buscas repetidas ou acesso remoto pelo filtro local");
    projectField.setText("Projeto/Relatorios");pump(d,()->status(projects).getText().contains("3 "));
    projectField.setText("");projects.getTree().dispose();waitUI(d,300);
