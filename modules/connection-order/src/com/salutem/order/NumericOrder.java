@@ -11,11 +11,11 @@ public final class NumericOrder implements Comparator<String> {
   result=collator.compare(left,right);return result!=0?result:left.compareTo(right);
  }
  public <K,V> boolean sort(Map<K,V> source,Function<V,String> label){
-  List<Map.Entry<K,V>> entries=new ArrayList<>(source.entrySet());
-  List<Map.Entry<K,V>> sorted=new ArrayList<>(entries);
-  sorted.sort((a,b)->{int c=compare(label.apply(a.getValue()),label.apply(b.getValue()));return c!=0?c:compare(String.valueOf(a.getKey()),String.valueOf(b.getKey()));});
-  boolean changed=false;for(int i=0;i<entries.size();i++)if(!Objects.equals(entries.get(i).getKey(),sorted.get(i).getKey())){changed=true;break;}
-  if(changed){source.clear();for(Map.Entry<K,V> entry:sorted)source.put(entry.getKey(),entry.getValue());}
-  return changed;
+  Comparator<Map.Entry<K,V>> order=(a,b)->{int c=compare(label.apply(a.getValue()),label.apply(b.getValue()));return c!=0?c:compare(String.valueOf(a.getKey()),String.valueOf(b.getKey()));};
+  Map.Entry<K,V> previous=null;boolean changed=false;
+  for(Map.Entry<K,V> entry:source.entrySet()){if(previous!=null && order.compare(previous,entry)>0){changed=true;break;}previous=entry;}
+  if(!changed)return false;
+  List<Map.Entry<K,V>> sorted=new ArrayList<>(source.entrySet());sorted.sort(order);
+  source.clear();for(Map.Entry<K,V> entry:sorted)source.put(entry.getKey(),entry.getValue());return true;
  }
 }

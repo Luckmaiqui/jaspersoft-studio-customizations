@@ -47,7 +47,7 @@ function Get-JavaMajor([string]$Root){
     }
     throw 'Não foi possível confirmar o Java usado por esta instalação. Este pacote exige Java 17 ou superior.'
 }
-function Get-Plan([string]$Root){
+function Get-Plan([string]$Root,[string]$PackageRoot=$PSScriptRoot){
     $rootFull=(Resolve-Path -LiteralPath $Root).Path
     $plugins=Join-Path $rootFull 'plugins'
     if(-not(Test-Path -LiteralPath (Join-Path $rootFull 'Jaspersoft Studio.ini')) -or -not(Test-Path -LiteralPath $plugins)){throw 'Pasta inválida. Selecione a pasta que contém plugins e Jaspersoft Studio.ini.'}
@@ -59,10 +59,10 @@ function Get-Plan([string]$Root){
     if($version -ne '6.20.6.final'){throw "Versão encontrada: $version. Este pacote foi preparado para o Studio 6.20.6. Não é compatível diretamente com 6.16 ou outras versões."}
     $javaMajor=Get-JavaMajor $rootFull
     if($javaMajor -lt 17){throw "Java encontrado: $javaMajor. Os complementos deste pacote exigem Java 17 ou superior."}
-    $manifest=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'pacote\arquivos.json') -Raw|ConvertFrom-Json
+    $manifest=Get-Content -LiteralPath (Join-Path $PackageRoot 'pacote\arquivos.json') -Raw|ConvertFrom-Json
     $files=New-Object 'System.Collections.Generic.List[object]';$skipped=New-Object 'System.Collections.Generic.List[string]'
     foreach($entry in $manifest){
-        $source=Join-Path (Join-Path $PSScriptRoot 'pacote\plugins') $entry.name
+        $source=Join-Path (Join-Path $PackageRoot 'pacote\plugins') $entry.name
         if((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -ne $entry.sha256){throw "Arquivo ausente ou alterado no pacote: $($entry.name)"}
         $mf=Read-Manifest $source;$fragment=$mf['Fragment-Host']
         if($fragment){$hostId=($fragment -split ';')[0];if(-not $hostBundles.ContainsKey($hostId)){$skipped.Add($entry.name);continue}
@@ -73,19 +73,44 @@ function Get-Plan([string]$Root){
     return [pscustomobject]@{Root=$rootFull;Version=$version;Java=$javaMajor;Files=$files.ToArray();Skipped=$skipped.ToArray()}
 }
 
+function Get-LaunchPlan([string]$Root,[string]$StateDirectory,[string]$Component){
+    $rootFull=(Resolve-Path -LiteralPath $Root).Path
+    $exe=Join-Path $rootFull 'Jaspersoft Studio.exe'
+    $core=Join-Path $rootFull 'plugins\com.jaspersoft.studio_6.20.6.final.jar'
+    if(-not(Test-Path -LiteralPath $exe) -or -not(Test-Path -LiteralPath $core)){throw 'Instalação incompatível. É necessário o Studio Community 6.20.6.'}
+    $mf=Read-Manifest $core
+    if($mf['Bundle-Version'] -ne '6.20.6.final'){throw 'Versão incompatível do Studio.'}
+    $javaMajor=Get-JavaMajor $rootFull
+    if($javaMajor -lt 17){throw 'É necessário Java 17 ou superior.'}
+    $target=Join-Path $rootFull 'dropins\eclipse\plugins'
+    $inventory=@(Get-ChildItem -LiteralPath $target -File -Filter '*.jar' -ErrorAction SilentlyContinue|Sort-Object Name|ForEach-Object{$_.Name+'|'+$_.Length+'|'+$_.LastWriteTimeUtc.Ticks}) -join "`n"
+    $sha=[Security.Cryptography.SHA256]::Create()
+    try{
+        $signature=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($inventory)))).Replace('-','')
+        $rootBytes=[Text.Encoding]::UTF8.GetBytes($rootFull.ToLowerInvariant())
+        $rootId=([BitConverter]::ToString($sha.ComputeHash($rootBytes))).Replace('-','')
+    }finally{$sha.Dispose()}
+    $stateFile=Join-Path $StateDirectory ('.launch-'+$rootId+'.json')
+    $needsClean=$true
+    if(Test-Path -LiteralPath $stateFile){try{$state=Get-Content -LiteralPath $stateFile -Raw|ConvertFrom-Json;$needsClean=($state.signature -ne $signature)}catch{ }}
+    $arguments=@()
+    if($needsClean){$arguments+='-clean'}
+    if($Component -eq 'translation'){$arguments+=@('-nl','pt_BR')}
+    if($Component -eq 'themes'){$arguments+=@('-pluginCustomization',('"'+(Join-Path $StateDirectory 'padroes.ini')+'"'))}
+    return [pscustomobject]@{Root=$rootFull;Version=$mf['Bundle-Version'];Java=$javaMajor;Executable=$exe;Arguments=$arguments;NeedsClean=$needsClean;StateFile=$stateFile;Signature=$signature}
+}
+
 try {
     if(-not $StudioPath){if($ValidateOnly){throw 'Informe -StudioPath para validar sem interface.'};$StudioPath=Choose-Studio}
-    $plan=Get-Plan $StudioPath
-    if($ValidateOnly){$plan|Select-Object Root,Version,Java,@{n='Plugins';e={$_.Files.Count}},@{n='OpcionaisAusentes';e={$_.Skipped.Count}};exit 0}
     if($Launch){
-        $exe=Join-Path $plan.Root 'Jaspersoft Studio.exe'
-        if(-not(Test-Path -LiteralPath $exe)){throw 'Executável Jaspersoft Studio.exe não encontrado.'}
-        $launchArgs=@('-clean')
-        if($componentConfig.component -eq 'translation'){$launchArgs+=@('-nl','pt_BR')}
-        if($componentConfig.component -eq 'themes'){$launchArgs+=@('-pluginCustomization',('"'+(Join-Path $PSScriptRoot 'padroes.ini')+'"'))}
-        Start-Process -FilePath $exe -ArgumentList $launchArgs
+        $launchPlan=Get-LaunchPlan $StudioPath $PSScriptRoot $componentConfig.component
+        if($ValidateOnly){$launchPlan|Select-Object Root,Version,Java,Arguments,NeedsClean;exit 0}
+        if($launchPlan.Arguments.Count){Start-Process -FilePath $launchPlan.Executable -ArgumentList $launchPlan.Arguments}else{Start-Process -FilePath $launchPlan.Executable}
+        try{@{signature=$launchPlan.Signature}|ConvertTo-Json|Set-Content -LiteralPath $launchPlan.StateFile -Encoding UTF8}catch{ }
         exit 0
     }
+    $plan=Get-Plan $StudioPath
+    if($ValidateOnly){$plan|Select-Object Root,Version,Java,@{n='Plugins';e={$_.Files.Count}},@{n='OpcionaisAusentes';e={$_.Skipped.Count}};exit 0}
     $principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     if(-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){
         $argsList=@('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$PSCommandPath+'"'),'-StudioPath',('"'+$plan.Root+'"'),'-Elevated')

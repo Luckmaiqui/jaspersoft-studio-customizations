@@ -1,4 +1,4 @@
-# Pesquisa e Ordenação — Versão 2.5.0
+# Pesquisa e Ordenação — Versão 2.6.0
 
 Ctrl+F no Explorador de Repositórios abre com o servidor selecionado (ou o servidor da pasta/arquivo selecionado). Sem seleção de servidor, abre com Todos os Servidores.
 
@@ -7,3 +7,5 @@ Na janela de pesquisa, use Escolher Servidores… para marcar várias conexões.
 A busca consulta nomes e descrições dos recursos, sem baixar todos os relatórios. Os filtros dos exploradores são independentes. MyReports permanece na árvore nativa.
 
 Feche o Studio após salvar, execute Instalar.bat e reinicie pelo Abrir JS.bat desta pasta. Este componente não instala tema nem tradução.
+
+O Abrir JS.bat otimizado preserva o cache do Eclipse nas aberturas seguintes e usa -clean quando detecta atualização dos complementos. Tema/tradução/ordenação mantêm as funcionalidades com menos trabalho repetitivo.

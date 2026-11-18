@@ -21,6 +21,9 @@ public class CheckThemeSwitch {
     if(gallery.getSelection()[0]!=item)throw new AssertionError("Perdeu a seleção");count++;
    }
    if(count!=7)throw new AssertionError("Quantidade de temas");
+   Field pool=theme.getClass().getDeclaredField("colorPool");pool.setAccessible(true);int colors=((java.util.Map<?,?>)pool.get(theme)).size();
+   for(int repeat=0;repeat<10;repeat++)for(ThemePalette p:ThemePalette.all())apply.invoke(theme,d,p);
+   if(((java.util.Map<?,?>)pool.get(theme)).size()!=colors)throw new AssertionError("Cores acumuladas ao alternar temas");
    System.out.println("PASS: sete paletas aplicadas a Gallery e ProgressMonitorPart; seleção e rótulos desabilitados atualizados.");
   }finally{shell.dispose();d.dispose();}
  }

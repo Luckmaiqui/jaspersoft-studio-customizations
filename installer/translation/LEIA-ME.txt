@@ -9,3 +9,4 @@ Use o ZIP do componente desejado ou o conjunto com três pastas. Cada pasta tem 
 Feche o Studio antes da instalação. O instalador solicita administrador, detecta ou pede a pasta do produto e valida Java 17+, Studio Community 6.20.6 e hashes. Instala em dropins/eclipse/plugins sem substituir os JARs originais. Componentes já instalados permanecem. Os complementos não devem ser usados diretamente no Studio 6.16.
 
 Para desinstalar, feche o Studio e remova apenas os JARs listados em pacote/arquivos.json do componente correspondente, da pasta dropins/eclipse/plugins. Preserve todos os demais arquivos. Reinicie com -clean. O pacote anterior deve ser guardado para reversão.
+O Abrir JS.bat otimizado preserva o cache do Eclipse nas aberturas seguintes e usa -clean quando detecta atualização dos complementos. Tema/tradução/ordenação mantêm as funcionalidades com menos trabalho repetitivo.

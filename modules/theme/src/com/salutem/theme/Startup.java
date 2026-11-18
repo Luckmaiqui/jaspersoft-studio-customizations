@@ -18,6 +18,8 @@ public final class Startup implements IStartup {
  private Color fg, bg, border, accent, muted;
  private String paletteId;
  private boolean initialized;
+ private boolean visibleOnly,colorsRegistered;
+ private final java.util.Map<Integer,Color> colorPool=new java.util.HashMap<>();
  public void earlyStartup() {
   Display d=Display.getDefault();
   d.asyncExec(new Runnable() { public void run() {
@@ -42,18 +44,24 @@ public final class Startup implements IStartup {
      d.setData("org.eclipse.swt.internal.win32.Combo.useDarkTheme",Boolean.FALSE);
      d.setData("org.eclipse.swt.internal.win32.Table.headerLineColor",border);
      d.addFilter(SWT.Show,event->{if(activeTheme() && event.widget instanceof Menu) menu((Menu)event.widget);});
+     RefreshQueue queue=new RefreshQueue(d,Startup.this::visitVisible);
+     org.eclipse.swt.widgets.Listener changes=e->{if(activeTheme() && e.widget instanceof Control){Control c=(Control)e.widget;queue.request(c instanceof StyledText?c.getParent():c);}};
+     for(int type:new int[]{SWT.Show,SWT.Selection,SWT.Expand,SWT.FocusIn,SWT.Modify})d.addFilter(type,changes);
 
      configureDisabledLabels(d);
      initialized=true;
     }
-    try {for(Shell s:d.getShells()) visit(s);}
-    finally {if(!d.isDisposed())d.timerExec(1000,this);}
+    try {for(Shell s:d.getShells()) visitVisible(s);}
+    finally {if(!d.isDisposed())d.timerExec(3000,this);}
     return;
    }
-   d.timerExec(1000,this);
+   d.timerExec(3000,this);
   }});
  }
- private Color rgb(Display display,int value){return new Color(display,(value>>16)&255,(value>>8)&255,value&255);}
+ private Color rgb(Display display,int value){
+  if(!colorsRegistered){colorsRegistered=true;display.disposeExec(()->{for(Color c:colorPool.values())if(!c.isDisposed())c.dispose();colorPool.clear();});}
+  return colorPool.computeIfAbsent(value,key->new Color(display,(key>>16)&255,(key>>8)&255,key&255));
+ }
  private String rgbString(int value){return ((value>>16)&255)+","+((value>>8)&255)+","+(value&255);}
  private void applyPalette(Display display,ThemePalette palette){
   paletteId=palette.id;fg=rgb(display,palette.foreground);bg=rgb(display,palette.background);border=rgb(display,palette.border);accent=rgb(display,palette.accent);muted=rgb(display,palette.muted);
@@ -70,8 +78,14 @@ public final class Startup implements IStartup {
   editors.put("currentLineColor",rgbString(palette.accent));
  }
  private boolean dark(Color c) { return c.getRed()+c.getGreen()+c.getBlue()<330; }
- private void visit(Control c) {
+ private void visitVisible(Control c){
   if(c.isDisposed())return;
+  ThemePalette palette=ThemePalette.find(InstanceScope.INSTANCE.getNode("org.eclipse.e4.ui.css.swt.theme").get("themeid", ""));
+  if(palette==null)return;if(!palette.id.equals(paletteId))applyPalette(c.getDisplay(),palette);
+  boolean previous=visibleOnly;visibleOnly=true;try{visit(c);}finally{visibleOnly=previous;}
+ }
+ private void visit(Control c) {
+  if(c.isDisposed() || (visibleOnly && !c.isVisible()))return;
   if(inProperties(c) || c.getClass().getSimpleName().equals("TabbedPropertyTitle")) propertyColors(c);
   try { extras(c); }
   catch(RuntimeException error) {
@@ -84,7 +98,6 @@ public final class Startup implements IStartup {
   if(c instanceof Text || c instanceof Combo || c instanceof CCombo) {
    if(dark(c.getBackground()) && dark(c.getForeground())) c.setForeground(fg);
   }
-  if(c instanceof Tree) for(TreeItem i:((Tree)c).getItems()) item(i);
   if(c instanceof Button && (c.getStyle()&(SWT.CHECK|SWT.RADIO))!=0) {
    Color parent=c.getParent().getBackground();
    if(dark(parent)) { if(!c.getBackground().equals(parent))c.setBackground(parent); if(dark(c.getForeground()))c.setForeground(fg); }
@@ -160,7 +173,7 @@ public final class Startup implements IStartup {
   }
   if(c instanceof FigureCanvas) {
    IFigure root=((FigureCanvas)c).getContents();
-   if(root!=null && hasPalette(root,0)) {
+   if(root!=null && !(root instanceof PaletteSurface) && hasPalette(root,0)) {
     if(!(root instanceof PaletteSurface)) {
      ((FigureCanvas)c).setContents(null);
      PaletteSurface surface=new PaletteSurface(root);
@@ -311,7 +324,7 @@ public final class Startup implements IStartup {
   for(TreeItem child:item.getItems())uniformItem(child,columns);
  }
  private void menu(Menu m) {
-  if(m.isDisposed())return;
+  if(m.isDisposed() || (visibleOnly && !m.isVisible()))return;
   try {
    java.lang.reflect.Method method=Menu.class.getDeclaredMethod("setBackground",Color.class);
    // Custom popup brushes force classic Windows disabled-text embossing.
@@ -342,10 +355,10 @@ public final class Startup implements IStartup {
   double light=.2126*r.red+.7152*r.green+.0722*r.blue;
   if(light>=145)return old;
   return syntaxColors.computeIfAbsent(r,k->{
-   if(k.blue>k.red*1.2 && k.blue>k.green*1.2)return new Color(old.getDevice(),135,180,255);
-   if(k.green>k.red*1.2)return new Color(old.getDevice(),126,214,177);
-   if(k.red>k.green*1.5 && k.red>k.blue*1.2)return new Color(old.getDevice(),244,160,160);
-   if(k.red>60 && k.blue>60)return new Color(old.getDevice(),201,167,255);
+   if(k.blue>k.red*1.2 && k.blue>k.green*1.2)return rgb((Display)old.getDevice(),0x87B4FF);
+   if(k.green>k.red*1.2)return rgb((Display)old.getDevice(),0x7ED6B1);
+   if(k.red>k.green*1.5 && k.red>k.blue*1.2)return rgb((Display)old.getDevice(),0xF4A0A0);
+   if(k.red>60 && k.blue>60)return rgb((Display)old.getDevice(),0xC9A7FF);
    return fg;
   });
  }
@@ -380,24 +393,4 @@ public final class Startup implements IStartup {
    }
   }
  }
- private void item(TreeItem i) {
-  if(i.isDisposed())return;
-  if(dark(i.getBackground()) && dark(i.getForeground()))i.setForeground(fg);
-  for(TreeItem child:i.getItems())item(child);
- }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

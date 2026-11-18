@@ -3,32 +3,45 @@ import java.util.*;import java.io.*;import org.eclipse.ui.IStartup;import org.ec
 /** Complements localized resource fragments. Never changes editable text, combo values or document models. */
 public final class Startup implements IStartup {
  private final Properties dictionary=new Properties();
+ private final Map<String,String> translatedCache=Collections.synchronizedMap(new LinkedHashMap<String,String>(256,.75f,true){protected boolean removeEldestEntry(Map.Entry<String,String> e){return size()>2048;}});
+ private static final java.util.regex.Pattern PAGE=java.util.regex.Pattern.compile("Page \\d+ of \\d+"),SAVE=java.util.regex.Pattern.compile("Save ['\"].*['\"]\\?"),SAVE_BUTTON=java.util.regex.Pattern.compile("(?i)&?(?:Salvar|Save)\\s*[@\\t]\\s*(?:Ctrl|Control)\\s*\\+\\s*S");
+ private boolean visibleOnly;
  public Startup(){try(InputStream stream=getClass().getResourceAsStream("/translations.properties")){if(stream!=null)dictionary.load(stream);}catch(IOException error){System.err.println("Salutem pt_BR: "+error);}}
  public String translate(String original){
   if(original==null || original.isEmpty())return original;
+  String cached=translatedCache.get(original);if(cached!=null)return cached;
+  String result=translateUncached(original);translatedCache.put(original,result);return result;
+ }
+ private String translateUncached(String original){
   int tab=original.indexOf('\t');String suffix=tab>=0?original.substring(tab):"";String text=tab>=0?original.substring(0,tab):original;
   String translated=dictionary.getProperty(text);
   if(translated==null)translated=dictionary.getProperty(text.replace("&",""));
   if(translated==null && text.endsWith(":")){String bare=text.substring(0,text.length()-1);String found=dictionary.getProperty(bare);if(found!=null)translated=found+":";}
   if(translated==null && text.endsWith("...")){String bare=text.substring(0,text.length()-3);String found=dictionary.getProperty(bare);if(found!=null)translated=found+"...";}
-  if(translated==null && text.matches("Page \\d+ of \\d+"))translated=text.replaceFirst("Page (\\d+) of (\\d+)","Página $1 de $2");
-  if(translated==null && text.matches("Save ['\"].*['\"]\\?"))translated="Salvar"+text.substring(4);
+  if(translated==null && PAGE.matcher(text).matches())translated=text.replaceFirst("Page (\\d+) of (\\d+)","Página $1 de $2");
+  if(translated==null && SAVE.matcher(text).matches())translated="Salvar"+text.substring(4);
   if(translated==null)return original;
   if(text.contains("&") && !translated.contains("&"))translated="&"+translated;
   return translated+suffix;
  }
  public String translateButton(String original){
   String translated=translate(original);
-  if(translated!=null && translated.matches("(?i)&?(?:Salvar|Save)\\s*[@\\t]\\s*(?:Ctrl|Control)\\s*\\+\\s*S"))return "Salvar";
+  if(translated!=null && SAVE_BUTTON.matcher(translated).matches())return "Salvar";
   return translated;
  }
  public String translateField(String original){
   if(original!=null && Set.of("Language","Language:","Idioma","Idioma:").contains(original.replace("&","")))return original.endsWith(":")?"Linguagem:":"Linguagem";
   return translate(original);
  }
- public void earlyStartup(){if(!Locale.getDefault().getLanguage().equals("pt"))return;Display d=Display.getDefault();d.asyncExec(new Runnable(){public void run(){if(d.isDisposed())return;try{for(Shell s:d.getShells())visit(s);}finally{if(!d.isDisposed())d.timerExec(1200,this);}}});}
- private void menu(Menu m){if(m==null||m.isDisposed())return;for(MenuItem i:m.getItems()){String t=translate(i.getText());if(!t.equals(i.getText()))i.setText(t);menu(i.getMenu());}}
- private void visit(Control c){if(c.isDisposed())return;try{
+ public void earlyStartup(){if(!Locale.getDefault().getLanguage().equals("pt"))return;Display d=Display.getDefault();d.asyncExec(()->{
+  RefreshQueue queue=new RefreshQueue(d,this::visitVisible);
+  org.eclipse.swt.widgets.Listener events=e->{if(e.widget instanceof Menu){Menu menu=(Menu)e.widget;d.asyncExec(()->menu(menu));}else if(e.widget instanceof Control)queue.request((Control)e.widget);};
+  for(int type:new int[]{org.eclipse.swt.SWT.Show,org.eclipse.swt.SWT.Selection,org.eclipse.swt.SWT.FocusIn,org.eclipse.swt.SWT.Expand})d.addFilter(type,events);
+  new Runnable(){public void run(){if(d.isDisposed())return;try{for(Shell s:d.getShells())visitVisible(s);}finally{if(!d.isDisposed())d.timerExec(3000,this);}}}.run();
+ });}
+ private void visitVisible(Control c){boolean previous=visibleOnly;visibleOnly=true;try{visit(c);}finally{visibleOnly=previous;}}
+ private void menu(Menu m){if(m==null||m.isDisposed()||(visibleOnly&&!m.isVisible()))return;for(MenuItem i:m.getItems()){String t=translate(i.getText());if(!t.equals(i.getText()))i.setText(t);menu(i.getMenu());}}
+ private void visit(Control c){if(c.isDisposed() || (visibleOnly && !c.isVisible()))return;try{
   if(c instanceof Shell){Shell s=(Shell)c;String t=translate(s.getText());if(!t.equals(s.getText()))s.setText(t);menu(s.getMenuBar());}
   if(c instanceof Label){Label l=(Label)c;String t=translateField(l.getText());if(!t.equals(l.getText()))l.setText(t);}
   if(c instanceof CLabel){CLabel l=(CLabel)c;String t=translateField(l.getText());if(!t.equals(l.getText()))l.setText(t);}
