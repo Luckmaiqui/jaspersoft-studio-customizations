@@ -8,6 +8,9 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.*;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.*;
@@ -19,11 +22,12 @@ final class GlobalSearchDialog extends Dialog {
  private static GlobalSearchDialog current;
  private final RepositoryView view;private final TreeViewer viewer;private final List<GlobalSearchEngine.Target> targets;
  private final List<GlobalSearchEngine.Hit> hits=new ArrayList<>();
+ private Object initialServer;private List<GlobalSearchEngine.Target> selectedTargets=new ArrayList<>();
  private Text query;private Combo scope;private Table table,connections;private Label status;private Button cancel;
  private GlobalSearchEngine.Session session;private int generation,completed,failed,total;
- static void show(RepositoryView view,TreeViewer viewer,List<Object> servers){
-  if(current!=null && current.getShell()!=null && !current.getShell().isDisposed()){current.getShell().forceActive();return;}
-  current=new GlobalSearchDialog(view,viewer,servers);current.open();
+ static void show(RepositoryView view,TreeViewer viewer,List<Object> servers,Object selectedServer){
+  if(current!=null && current.getShell()!=null && !current.getShell().isDisposed()){current.applyContext(selectedServer);current.getShell().forceActive();return;}
+  current=new GlobalSearchDialog(view,viewer,servers);current.initialServer=selectedServer;current.open();
  }
  private GlobalSearchDialog(RepositoryView view,TreeViewer viewer,List<Object> servers){
   super(viewer.getTree().getShell());this.view=view;this.viewer=viewer;
@@ -35,9 +39,12 @@ final class GlobalSearchDialog extends Dialog {
  protected Control createDialogArea(Composite parent){
   Composite area=(Composite)super.createDialogArea(parent);area.setLayout(new GridLayout(1,false));
   Label hint=new Label(area,SWT.WRAP);hint.setText("Busca nomes e descrições dos recursos nos servidores. A pesquisa começa ao clicar em Pesquisar (mínimo: 3 caracteres).");hint.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
-  Composite bar=new Composite(area,SWT.NONE);bar.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));bar.setLayout(new GridLayout(4,false));
+  Composite bar=new Composite(area,SWT.NONE);bar.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));bar.setLayout(new GridLayout(5,false));
   query=new Text(bar,SWT.SEARCH|SWT.ICON_SEARCH|SWT.ICON_CANCEL|SWT.BORDER);query.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));query.setMessage("Ex.: ficha padrão");
-  scope=new Combo(bar,SWT.READ_ONLY);scope.add("Todos os servidores ("+targets.size()+")");for(var t:targets)scope.add(t.name());scope.select(0);
+  scope=new Combo(bar,SWT.READ_ONLY);scope.add("Todos os Servidores ("+targets.size()+")");scope.add("Servidores Selecionados…");for(var t:targets)scope.add(t.name());scope.select(0);applyContext(initialServer);
+  GridData scopeSize=new GridData(SWT.FILL,SWT.CENTER,false,false);scopeSize.widthHint=250;scope.setLayoutData(scopeSize);
+  scope.addListener(SWT.Selection,e->{if(scope.getSelectionIndex()==1)chooseServers();});
+  Button choose=new Button(bar,SWT.PUSH);choose.setText("Escolher Servidores…");choose.addListener(SWT.Selection,e->chooseServers());
   Button search=new Button(bar,SWT.PUSH);search.setText("Pesquisar");search.addListener(SWT.Selection,e->search());
   cancel=new Button(bar,SWT.PUSH);cancel.setText("Cancelar pesquisa");cancel.setEnabled(false);cancel.addListener(SWT.Selection,e->{stop();status.setText("Pesquisa cancelada; resultados já recebidos foram mantidos.");});
   query.addListener(SWT.DefaultSelection,e->search());
@@ -59,8 +66,10 @@ final class GlobalSearchDialog extends Dialog {
  public boolean close(){stop();return super.close();}
  private void search(){
   String requested=query.getText().strip();if(requested.length()<3){status.setText("Digite pelo menos 3 caracteres para pesquisar.");return;}
+  List<GlobalSearchEngine.Target> selected=selectedScope(targets,selectedTargets,scope.getSelectionIndex());
+  if(selected.isEmpty()){status.setText("Selecione pelo menos um servidor em Escolher Servidores…");return;}
   stop();int token=generation;hits.clear();table.setItemCount(0);connections.removeAll();completed=failed=0;
-  List<GlobalSearchEngine.Target> selected=scope.getSelectionIndex()==0?targets:List.of(targets.get(scope.getSelectionIndex()-1));total=selected.size();
+  total=selected.size();
   Map<GlobalSearchEngine.Target,TableItem> rows=new HashMap<>();for(var target:selected){TableItem item=new TableItem(connections,SWT.NONE);item.setText(new String[]{target.name(),"Aguardando resposta…"});rows.put(target,item);}
   cancel.setEnabled(true);status.setText("Consultando "+total+" servidores…");Display display=getShell().getDisplay();
   session=GlobalSearchEngine.search(selected,requested,new GlobalServerBackend(),update->display.asyncExec(()->{
@@ -70,6 +79,19 @@ final class GlobalSearchDialog extends Dialog {
    else{int selectedIndex=table.getSelectionIndex();GlobalSearchEngine.Hit selectedHit=selectedIndex>=0 && selectedIndex<hits.size()?hits.get(selectedIndex):null;message=update.hits().size()+" resultados";hits.addAll(update.hits());hits.sort((a,b)->{int c=new NumericOrder().compare(a.target().name(),b.target().name());return c!=0?c:a.label().compareToIgnoreCase(b.label());});table.deselectAll();table.setItemCount(hits.size());table.clearAll();if(selectedHit!=null)table.setSelection(hits.indexOf(selectedHit));}
    rows.get(update.target()).setText(1,message);status.setText(completed+"/"+total+" servidores concluídos · "+hits.size()+" resultados · "+failed+" falhas (detalhes em Conexões)");if(completed==total)cancel.setEnabled(false);
   }));
+ }
+ static List<GlobalSearchEngine.Target> selectedScope(List<GlobalSearchEngine.Target> all,List<GlobalSearchEngine.Target> selected,int index){
+  if(index==0)return all;if(index==1)return List.copyOf(selected);return index>=2 && index-2<all.size()?List.of(all.get(index-2)):List.of();
+ }
+ private void applyContext(Object server){
+  if(scope==null || scope.isDisposed())return;
+  for(int i=0;i<targets.size();i++)if(targets.get(i).connection()==server){scope.select(i+2);return;}
+  scope.select(0);
+ }
+ private void chooseServers(){
+  ListSelectionDialog dialog=new ListSelectionDialog(getShell(),targets,ArrayContentProvider.getInstance(),new LabelProvider(){public String getText(Object value){return ((GlobalSearchEngine.Target)value).name();}},"Marque os servidores que deseja consultar juntos.");
+  dialog.setTitle("Selecionar Servidores");dialog.setInitialSelections(selectedTargets.toArray());
+  if(dialog.open()==org.eclipse.jface.window.Window.OK){selectedTargets=new ArrayList<>();for(Object value:dialog.getResult())selectedTargets.add((GlobalSearchEngine.Target)value);scope.setItem(1,"Servidores Selecionados ("+selectedTargets.size()+")");scope.select(1);}
  }
  private void reveal(){
   int index=table.getSelectionIndex();if(index<0 || index>=hits.size())return;var hit=hits.get(index);Display display=getShell().getDisplay();

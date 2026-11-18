@@ -20,8 +20,8 @@ public class CheckThemeSwitch {
     if(disabled.getRed()!=((p.muted>>16)&255)||disabled.getGreen()!=((p.muted>>8)&255)||disabled.getBlue()!=(p.muted&255))throw new AssertionError("Rótulo desabilitado: "+p.id);
     if(gallery.getSelection()[0]!=item)throw new AssertionError("Perdeu a seleção");count++;
    }
-   if(count!=4)throw new AssertionError("Quantidade de temas");
-   System.out.println("PASS: quatro paletas aplicadas a Gallery e ProgressMonitorPart; seleção e rótulos desabilitados atualizados.");
+   if(count!=7)throw new AssertionError("Quantidade de temas");
+   System.out.println("PASS: sete paletas aplicadas a Gallery e ProgressMonitorPart; seleção e rótulos desabilitados atualizados.");
   }finally{shell.dispose();d.dispose();}
  }
 }

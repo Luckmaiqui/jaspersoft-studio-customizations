@@ -8,10 +8,10 @@ Baixe em [Releases](https://github.com/Luckmaiqui/pacote-de-atualizacoes-do-jasp
 
 | ZIP | Pasta | Conteúdo |
 |---|---|---|
-| JS-Temas-v2.4.0.zip | Temas | Salutem Noite (azul), Grafite, Floresta (verde) e Ameixa (roxo) |
-| JS-Traducao-ptBR-v2.4.0.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
-| JS-Ordenacao-v2.4.0.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
-| JS-Pacotes-Separados-v2.4.0.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
+| JS-Temas-v2.5.0.zip | Temas | Noite, Grafite, Floresta, Ameixa, GitHub, Ônix e Meia-Noite |
+| JS-Traducao-ptBR-v2.5.0.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
+| JS-Ordenacao-v2.5.0.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
+| JS-Pacotes-Separados-v2.5.0.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
 
 Cada pasta tem **Instalar.bat** e **Abrir JS.bat** próprios. Você pode instalar apenas uma, duas ou todas. O pacote de temas não instala tradução nem muda o idioma. O pacote de tradução não instala nem seleciona tema. A ordenação também é independente.
 
@@ -26,7 +26,7 @@ O inicializador de temas respeita o idioma salvo; o padrão de tema para novos w
 
 ## Recursos e compatibilidade
 
-Os quatro temas compartilham os ajustes de propriedades, paleta, menus, galeria, editor, preview e assistentes. O papel do relatório e seu conteúdo não são modificados. As cores de texto principais, campos e seleção são verificadas com contraste mínimo 4,5:1.
+Os sete temas compartilham os ajustes de propriedades, paleta, menus, galeria, editor, preview e assistentes. O papel do relatório e seu conteúdo não são modificados. As cores de texto principais, campos e seleção são verificadas com contraste mínimo 4,5:1.
 
 A tradução reúne 49 recursos / 6.496 entradas em 24 fragmentos, pacotes Eclipse Babel e rótulos complementares. A ordenação agrupa códigos como `(001)`, `(002)`, `(014)`, `(103)`.
 
@@ -61,6 +61,8 @@ A ordenação numérica também se aplica às conexões de banco de dados e Jasp
 
 Repositórios: filtro local de bancos e conexões JasperServer por código/nome. Projeto: filtro independente de nomes e caminhos, com campo na barra nativa da aba (a árvore CommonNavigator permanece intacta).
 
-Ctrl+F no repositório ou **Buscar em todos os servidores…** abre uma única janela. Digite pelo menos 3 caracteres e clique em Pesquisar. O escopo padrão consulta todos os JasperServers cadastrados, com no máximo 2 consultas simultâneas. A lista reúne nome, tipo, caminho e servidor de origem; a aba Conexões informa falhas individuais. Cancelar mantém os resultados recebidos. Selecione um arquivo e use **Localizar na árvore**.
+Ctrl+F no repositório ou **Buscar em todos os servidores…** abre uma única janela. Digite pelo menos 3 caracteres e clique em Pesquisar. O escopo inicial acompanha o JasperServer selecionado, inclusive uma pasta/arquivo descendente. Sem contexto de servidor, inicia com Todos os Servidores. Use **Escolher Servidores…** para marcar múltiplas conexões e pesquisar somente nelas. A consulta ocorre com no máximo 2 consultas simultâneas. A lista reúne nome, tipo, caminho e servidor de origem; a aba Conexões informa falhas individuais. Cancelar mantém os resultados recebidos. Selecione um arquivo e use **Localizar na árvore**.
 
 A busca usa nomes e descrições dos recursos pela API nativa autenticada do Studio. Não baixa o conteúdo de todos os relatórios nem pesquisa o texto dentro dos JRXMLs. Não executa consultas remotas enquanto você digita ou ao abrir o aplicativo. A duração depende da quantidade e disponibilidade dos servidores.
+
+Os temas novos têm fundos próximos ao preto. O GitHub se inspira nas cores do [Primer](https://primer.style/product/getting-started/react/theme-reference/); Ônix usa preto neutro e Meia-Noite usa preto azulado. Menus de contexto usam o desenho nativo escuro do Windows para evitar texto em relevo nos comandos desabilitados.

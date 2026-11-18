@@ -1,6 +1,6 @@
 ﻿#Requires -Version 5.1
 [CmdletBinding()]
-param([string]$StudioPath,[switch]$Elevated,[switch]$ValidateOnly,[switch]$Launch)
+param([string]$StudioPath,[switch]$Elevated,[switch]$ValidateOnly,[switch]$Launch,[switch]$Quiet)
 $ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $componentConfig=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'componente.json') -Raw|ConvertFrom-Json
@@ -89,6 +89,7 @@ try {
     $principal=New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     if(-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){
         $argsList=@('-NoProfile','-ExecutionPolicy','Bypass','-STA','-File',('"'+$PSCommandPath+'"'),'-StudioPath',('"'+$plan.Root+'"'),'-Elevated')
+        if($Quiet){$argsList+='-Quiet'}
         $child=Start-Process -FilePath 'powershell.exe' -Verb RunAs -WindowStyle Hidden -ArgumentList $argsList -Wait -PassThru
         exit $child.ExitCode
     }
@@ -98,21 +99,35 @@ try {
     foreach($file in $plan.Files){$dest=Join-Path $target $file.Name;if(Test-Path -LiteralPath $dest){if((Get-FileHash -LiteralPath $dest -Algorithm SHA256).Hash -ne $file.Hash){throw "Já existe um arquivo diferente: $dest. Nenhum arquivo foi substituído."}}}
     New-Item -ItemType Directory -Force -Path $target|Out-Null
     $added=New-Object 'System.Collections.Generic.List[string]'
+    $previous=New-Object 'System.Collections.Generic.List[object]'
+    $backup=Join-Path $PSScriptRoot ('backups\'+(Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
     try {
+        foreach($file in $plan.Files){if($file.Name.StartsWith('com.salutem.')){
+            $prefix=$file.Name.Substring(0,$file.Name.LastIndexOf('_'))
+            foreach($old in @(Get-ChildItem -LiteralPath $target -File -Filter ($prefix+'_*.jar'))){if($old.Name -ne $file.Name){
+                if([IO.Path]::GetDirectoryName($old.FullName) -ne $target){throw 'Arquivo anterior fora da pasta de plugins.'}
+                New-Item -ItemType Directory -Force -Path $backup|Out-Null
+                $saved=Join-Path $backup $old.Name
+                Move-Item -LiteralPath $old.FullName -Destination $saved
+                $previous.Add([pscustomobject]@{Original=$old.FullName;Backup=$saved})
+            }}
+        }}
         foreach($file in $plan.Files){$dest=Join-Path $target $file.Name;if(-not(Test-Path -LiteralPath $dest)){Copy-Item -LiteralPath $file.Source -Destination $dest;$added.Add($dest)};if((Get-FileHash -LiteralPath $dest -Algorithm SHA256).Hash -ne $file.Hash){throw "Falha de cópia: $($file.Name)"}}
     }catch{
         foreach($created in $added){if([IO.Path]::GetDirectoryName($created) -eq $target){Remove-Item -LiteralPath $created -Force}}
+        foreach($old in $previous){Move-Item -LiteralPath $old.Backup -Destination $old.Original -Force}
         throw
     }
     $report=@('Instalação concluída.',('Pasta: '+$plan.Root),('Versão: '+$plan.Version),('Java: '+$plan.Java),('Complementos conferidos: '+$plan.Files.Count),('Módulos opcionais ausentes: '+$plan.Skipped.Count),('Arquivos adicionados: '+$added.Count),('Data: '+(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')))
     try{$report|Set-Content -LiteralPath (Join-Path $PSScriptRoot 'instalacao.log') -Encoding UTF8}catch{ }
+    if($Quiet){$report;exit 0}
     Add-Type -AssemblyName System.Windows.Forms
     $message=$componentConfig.title+" instalado com sucesso.`r`n`r`nReinicie o Studio pelo Abrir JS.bat desta pasta."
-    if($componentConfig.component -eq 'themes'){$message+="`r`nSelecione Noite, Grafite, Floresta ou Ameixa em Janela > Preferências > Gerais > Aparência."}
+    if($componentConfig.component -eq 'themes'){$message+="`r`nSelecione Noite, Grafite, Floresta, Ameixa, GitHub, Ônix ou Meia-Noite em Janela > Preferências > Gerais > Aparência."}
     [Windows.Forms.MessageBox]::Show($message,$componentConfig.title,'OK','Information')|Out-Null
     exit 0
 } catch {
-    if($ValidateOnly){Write-Error $_;exit 1}
+    if($ValidateOnly -or $Quiet){Write-Error $_;exit 1}
     Add-Type -AssemblyName System.Windows.Forms
     [Windows.Forms.MessageBox]::Show($_.Exception.Message,'Pacote de Atualizações do JasperStudio','OK','Error')|Out-Null
     exit 1

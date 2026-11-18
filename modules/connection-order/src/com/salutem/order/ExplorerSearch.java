@@ -176,10 +176,15 @@ public final class ExplorerSearch {
   if(filter instanceof ExplorerSearch)((ExplorerSearch)filter).text.setText("");
   viewer.setSelection(new StructuredSelection(selected),true);
  }
+ static Object selectedServer(TreeViewer viewer){
+  Object node=viewer.getStructuredSelection().getFirstElement();
+  while(node!=null){if(RepositoryOrder.kind(node)==2)return node;node=node instanceof ANode?((ANode)node).getParent():null;}
+  return null;
+ }
  private static void openServerSearch(RepositoryView view,TreeViewer viewer){
   List<Object> nodes=servers(viewer);
   if(nodes.isEmpty()){MessageDialog.openInformation(viewer.getTree().getShell(),"JasperStudio","Nenhuma conexão JasperServer cadastrada.");return;}
-  GlobalSearchDialog.show(view,viewer,nodes);
+  GlobalSearchDialog.show(view,viewer,nodes,selectedServer(viewer));
  }
  private static boolean pt(){return Locale.getDefault().getLanguage().equals("pt");}
 }

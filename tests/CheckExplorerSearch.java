@@ -49,6 +49,17 @@ public class CheckExplorerSearch {
    field.setText("sao jose");waitUI(d,350);if(groups[0].getItemCount()!=1 || groups[1].getItemCount()!=1)throw new AssertionError("Acentos");
    field.setText("");if(repo.getStructuredSelection().getFirstElement()!=bank2 || !groups[0].getExpanded())throw new AssertionError("Limpar perdeu seleção/expansão");
    repo.setSelection(StructuredSelection.EMPTY);Event key=new Event();key.keyCode='f';key.stateMask=SWT.MOD1;repo.getTree().notifyListeners(SWT.KeyDown,key);pump(d,()->remote.get()==1);
+   repo.setSelection(new StructuredSelection(server2));if(ExplorerSearch.selectedServer(repo)!=server2)throw new AssertionError("Servidor selecionado ignorado");
+   MDataAdapter descendant=adapter("Arquivo");descendant.setParent((com.jaspersoft.studio.model.ANode)server2,-1);nodes.put(server2,List.of(descendant));repo.refresh();repo.setSelection(new StructuredSelection(descendant),true);
+   if(ExplorerSearch.selectedServer(repo)!=server2)throw new AssertionError("Servidor ancestral ignorado");
+   nodes.remove(server2);repo.refresh();repo.setSelection(StructuredSelection.EMPTY);
+   var allTargets=List.of(new GlobalSearchEngine.Target(server2,"Mesmo Nome"),new GlobalSearchEngine.Target(server14,"Mesmo Nome"));
+   if(GlobalSearchDialog.selectedScope(allTargets,List.of(allTargets.get(1)),1).get(0).connection()!=server14 || GlobalSearchDialog.selectedScope(allTargets,allTargets,1).size()!=2 || GlobalSearchDialog.selectedScope(allTargets,List.of(),0).size()!=2 || GlobalSearchDialog.selectedScope(allTargets,List.of(),1).size()!=0 || GlobalSearchDialog.selectedScope(allTargets,List.of(),2).get(0).connection()!=server2)throw new AssertionError("Escopo múltiplo ou nomes repetidos");
+   GlobalSearchDialog.show(null,repo,List.of(server2,server14),server14);
+   Field currentDialog=GlobalSearchDialog.class.getDeclaredField("current");currentDialog.setAccessible(true);GlobalSearchDialog dialog=(GlobalSearchDialog)currentDialog.get(null);
+   Field scopeField=GlobalSearchDialog.class.getDeclaredField("scope");scopeField.setAccessible(true);Combo scope=(Combo)scopeField.get(dialog);
+   if(scope.getSelectionIndex()!=3)throw new AssertionError("Contexto não selecionado na janela");
+   GlobalSearchDialog.show(null,repo,List.of(server2,server14),null);if(scope.getSelectionIndex()!=0)throw new AssertionError("Sem contexto não voltou para todos");dialog.close();
    if(remote.get()!=1)throw new AssertionError("Ctrl+F sem seleção");
    for(Control c:field.getParent().getChildren())if(c instanceof Button)((Button)c).notifyListeners(SWT.Selection,new Event());
    if(remote.get()!=2)throw new AssertionError("Botão de busca do servidor");

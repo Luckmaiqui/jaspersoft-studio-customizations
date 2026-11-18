@@ -80,6 +80,7 @@ public final class Startup implements IStartup {
     System.err.println("Salutem theme: "+c.getClass().getName()+": "+error);
    }
   }
+  if(c instanceof Label && (c.getStyle()&SWT.SEPARATOR)==0)disabledLabel((Label)c);
   if(c instanceof Text || c instanceof Combo || c instanceof CCombo) {
    if(dark(c.getBackground()) && dark(c.getForeground())) c.setForeground(fg);
   }
@@ -191,6 +192,24 @@ public final class Startup implements IStartup {
   display.setData("org.eclipse.swt.internal.win32.Label.disabledForegroundColor",muted);
   display.setData("org.eclipse.swt.internal.win32.ProgressBar.useColors",Boolean.TRUE);
  }
+ private void disabledLabel(Label label) {
+  // Parent-disabled labels keep getEnabled()==true. Recompute their native
+  // drawing style from effective enablement without changing command state.
+  boolean enabled=label.isEnabled();
+  Object previous=label.getData("salutem.effectiveEnabled");
+  if(!Boolean.valueOf(enabled).equals(previous))try {
+   java.lang.reflect.Method update=Label.class.getDeclaredMethod("updateStyleBits",boolean.class);
+   update.setAccessible(true);update.invoke(label,enabled);
+   label.setData("salutem.effectiveEnabled",enabled);label.redraw();
+  }catch(ReflectiveOperationException ignored){ }
+  if(!enabled) {
+   if(label.getData("salutem.enabledForeground")==null)label.setData("salutem.enabledForeground",label.getForeground());
+   if(!muted.equals(label.getForeground()))label.setForeground(muted);
+  }else if(label.getData("salutem.enabledForeground") instanceof Color) {
+   Color original=(Color)label.getData("salutem.enabledForeground");
+   label.setForeground(original.isDisposed() || dark(original)?fg:original);label.setData("salutem.enabledForeground",null);
+  }
+ }
  private boolean inProgressPanel(Control control) {
   for(Control p=control;p!=null;p=p.getParent())for(Class<?> type=p.getClass();type!=null;type=type.getSuperclass()) {
    String name=type.getName();
@@ -295,8 +314,11 @@ public final class Startup implements IStartup {
   if(m.isDisposed())return;
   try {
    java.lang.reflect.Method method=Menu.class.getDeclaredMethod("setBackground",Color.class);
-   method.setAccessible(true);method.invoke(m,bg);
-   java.lang.reflect.Method foreground=Menu.class.getDeclaredMethod("setForeground",Color.class); foreground.setAccessible(true);foreground.invoke(m,fg);
+   // Custom popup brushes force classic Windows disabled-text embossing.
+   // Retain native dark popup painting; only the menu bar uses palette colors.
+   boolean bar=(m.getStyle()&SWT.BAR)!=0;
+   method.setAccessible(true);method.invoke(m,bar?bg:null);
+   java.lang.reflect.Method foreground=Menu.class.getDeclaredMethod("setForeground",Color.class); foreground.setAccessible(true);foreground.invoke(m,bar?fg:null);
   }catch(ReflectiveOperationException ignored){}
   if(m.getData("salutem.menuShow")==null) {
    m.setData("salutem.menuShow",Boolean.TRUE);

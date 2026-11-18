@@ -10,6 +10,12 @@
   <themeAssociation themeId="com.salutem.jasper.theme.forest" colorAndFontId="org.eclipse.ui.defaultTheme"/>
   <theme id="com.salutem.jasper.theme.plum" label="Salutem Ameixa" basestylesheeturi="css/salutem-ameixa.css"/>
   <themeAssociation themeId="com.salutem.jasper.theme.plum" colorAndFontId="org.eclipse.ui.defaultTheme"/>
+  <theme id="com.salutem.jasper.theme.github" label="Salutem GitHub" basestylesheeturi="css/salutem-github.css"/>
+  <themeAssociation themeId="com.salutem.jasper.theme.github" colorAndFontId="org.eclipse.ui.defaultTheme"/>
+  <theme id="com.salutem.jasper.theme.onyx" label="Salutem Ônix" basestylesheeturi="css/salutem-onyx.css"/>
+  <themeAssociation themeId="com.salutem.jasper.theme.onyx" colorAndFontId="org.eclipse.ui.defaultTheme"/>
+  <theme id="com.salutem.jasper.theme.midnight" label="Salutem Meia-Noite" basestylesheeturi="css/salutem-midnight.css"/>
+  <themeAssociation themeId="com.salutem.jasper.theme.midnight" colorAndFontId="org.eclipse.ui.defaultTheme"/>
  </extension>
  <extension point="org.eclipse.ui.startup"><startup class="com.salutem.theme.Startup"/></extension>
 </plugin>

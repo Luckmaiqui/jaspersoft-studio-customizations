@@ -41,6 +41,7 @@ function Zip-Folder([string]$Folder,[string]$Destination){
     Copy-Item -LiteralPath $temp -Destination $Destination -Force
 }
 if(-not $PackageOnly){
+    New-Item -ItemType Directory -Force -Path (Join-Path $root 'artifacts/plugins')|Out-Null
     & node (Join-Path $PSScriptRoot 'GenerateThemes.mjs')
     if($LASTEXITCODE -ne 0){throw 'Geração dos temas falhou.'}
     if(-not $StudioPath){$StudioPath=$env:JSS_HOME}
