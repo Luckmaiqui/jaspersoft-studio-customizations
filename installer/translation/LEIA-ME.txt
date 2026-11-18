@@ -10,3 +10,5 @@ Feche o Studio antes da instalação. O instalador solicita administrador, detec
 
 Para desinstalar, feche o Studio e remova apenas os JARs listados em pacote/arquivos.json do componente correspondente, da pasta dropins/eclipse/plugins. Preserve todos os demais arquivos. Reinicie com -clean. O pacote anterior deve ser guardado para reversão.
 O Abrir JS.bat otimizado preserva o cache do Eclipse nas aberturas seguintes e usa -clean quando detecta atualização dos complementos. Tema/tradução/ordenação mantêm as funcionalidades com menos trabalho repetitivo.
+
+Correção 2.6.1: seleções escuras e legíveis em Combo/CCombo/List e menus; estratégias de publicação Escrever e Escrever Apenas Expressão. Preserva as otimizações 2.6.0.

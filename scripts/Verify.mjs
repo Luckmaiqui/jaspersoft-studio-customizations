@@ -31,7 +31,7 @@ for(const file of files('translations/fragments').filter(f=>f.endsWith('_pt_BR.p
  resources++;keys+=Object.keys(pt).length;
 }
 const lang=properties(fs.readFileSync(path.join(root,'modules/language/resources/translations.properties'),'utf8'));
-for(const [en,pt] of Object.entries({'Problems':'Problemas','Repository Explorer':'Explorador de Repositórios','Text Field':'Campo de Texto','Page Header':'Cabeçalho da Página','Java Bean':'Java Bean','Data Adapters':'Banco de Dados','Format Factory Class':'Classe da Fábrica de Formatação'}))if(lang[en]!==pt)throw Error('Rótulo regressivo: '+en);
+for(const [en,pt] of Object.entries({'Problems':'Problemas','Repository Explorer':'Explorador de Repositórios','Text Field':'Campo de Texto','Page Header':'Cabeçalho da Página','Java Bean':'Java Bean','Data Adapters':'Banco de Dados','Format Factory Class':'Classe da Fábrica de Formatação','Overwrite':'Escrever','Overwrite Only Expression':'Escrever Apenas Expressão'}))if(lang[en]!==pt)throw Error('Rótulo regressivo: '+en);
 const palettes=properties(fs.readFileSync(path.join(root,'modules/theme/resources/palettes.properties'),'utf8'));
 function luminance(hex){const rgb=hex.match(/../g).map(c=>parseInt(c,16)/255).map(c=>c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4);return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];}
 function contrast(a,b){const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}

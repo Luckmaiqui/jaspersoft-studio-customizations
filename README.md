@@ -8,10 +8,10 @@ Baixe em [Releases](https://github.com/Luckmaiqui/pacote-de-atualizacoes-do-jasp
 
 | ZIP | Pasta | Conteúdo |
 |---|---|---|
-| JS-Temas-v2.6.0.zip | Temas | Noite, Grafite, Floresta, Ameixa, GitHub, Ônix e Meia-Noite |
-| JS-Traducao-ptBR-v2.6.0.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
-| JS-Ordenacao-v2.6.0.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
-| JS-Pacotes-Separados-v2.6.0.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
+| JS-Temas-v2.6.1.zip | Temas | Noite, Grafite, Floresta, Ameixa, GitHub, Ônix e Meia-Noite |
+| JS-Traducao-ptBR-v2.6.1.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
+| JS-Ordenacao-v2.6.1.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
+| JS-Pacotes-Separados-v2.6.1.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
 
 Cada pasta tem **Instalar.bat** e **Abrir JS.bat** próprios. Você pode instalar apenas uma, duas ou todas. O pacote de temas não instala tradução nem muda o idioma. O pacote de tradução não instala nem seleciona tema. A ordenação também é independente.
 
@@ -70,3 +70,5 @@ Os temas novos têm fundos próximos ao preto. O GitHub se inspira nas cores do 
 ## Desempenho
 
 A versão 2.6.0 reduz varreduras repetidas da interface, agrupa atualizações e reutiliza traduções e cores. O Abrir JS.bat usa -clean apenas na primeira abertura ou após atualização dos complementos. Instalação e atualizações continuam com hashes verificados. Veja as medições e seus limites em [Desempenho](docs/DESEMPENHO.md).
+
+Correção 2.6.1: restaura o desenho escuro dos menus e o destaque legível nas listas de seleção; os rótulos de publicação usam Escrever e Escrever Apenas Expressão. A ordem e os valores das opções permanecem os mesmos.

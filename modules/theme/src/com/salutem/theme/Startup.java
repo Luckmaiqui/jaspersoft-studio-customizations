@@ -20,6 +20,7 @@ public final class Startup implements IStartup {
  private boolean initialized;
  private boolean visibleOnly,colorsRegistered;
  private final java.util.Map<Integer,Color> colorPool=new java.util.HashMap<>();
+ private java.lang.reflect.Field customComboList;
  public void earlyStartup() {
   Display d=Display.getDefault();
   d.asyncExec(new Runnable() { public void run() {
@@ -41,9 +42,10 @@ public final class Startup implements IStartup {
      editors.put("AbstractTextEditor.Color.Foreground",rgbString(palette.foreground));
      editors.putBoolean("AbstractTextEditor.Color.Foreground.SystemDefault",false);
      editors.put("currentLineColor",rgbString(palette.accent));
-     d.setData("org.eclipse.swt.internal.win32.Combo.useDarkTheme",Boolean.FALSE);
+     d.setData("org.eclipse.swt.internal.win32.Combo.useDarkTheme",Boolean.TRUE);
      d.setData("org.eclipse.swt.internal.win32.Table.headerLineColor",border);
      d.addFilter(SWT.Show,event->{if(activeTheme() && event.widget instanceof Menu) menu((Menu)event.widget);});
+     d.addFilter(SWT.MouseDown,event->{if(activeTheme() && (event.widget instanceof Combo || event.widget instanceof org.eclipse.swt.widgets.List))nativeCombo((Control)event.widget);});
      RefreshQueue queue=new RefreshQueue(d,Startup.this::visitVisible);
      org.eclipse.swt.widgets.Listener changes=e->{if(activeTheme() && e.widget instanceof Control){Control c=(Control)e.widget;queue.request(c instanceof StyledText?c.getParent():c);}};
      for(int type:new int[]{SWT.Show,SWT.Selection,SWT.Expand,SWT.FocusIn,SWT.Modify})d.addFilter(type,changes);
@@ -114,7 +116,8 @@ public final class Startup implements IStartup {
    c.setBackground(bg);c.setForeground(fg);c.getParent().setBackground(bg);
   }
   if(c instanceof Scrollable && c.getData("salutem.nativeTheme")==null) {
-   org.eclipse.swt.internal.win32.OS.SetWindowTheme(c.handle,((c instanceof Combo || c instanceof org.eclipse.swt.widgets.List)?"Explorer\0":"DarkMode_Explorer\0").toCharArray(),null);
+   if(c instanceof Combo || c instanceof org.eclipse.swt.widgets.List)nativeCombo(c);
+   else org.eclipse.swt.internal.win32.OS.SetWindowTheme(c.handle,"DarkMode_Explorer\0".toCharArray(),null);
    c.setData("salutem.nativeTheme",Boolean.TRUE);
   }
   if(name.contains("FlyoutPaletteComposite$TitleCanvas") && c instanceof Canvas && c.getData("salutem.titlePaint")==null) {
@@ -140,6 +143,10 @@ public final class Startup implements IStartup {
   }
   if(c instanceof CCombo) {
    CCombo combo=(CCombo)c;
+   try{
+    if(customComboList==null){customComboList=CCombo.class.getDeclaredField("list");customComboList.setAccessible(true);}
+    Object popup=customComboList.get(combo);if(popup instanceof org.eclipse.swt.widgets.List)nativeCombo((Control)popup);
+   }catch(ReflectiveOperationException ignored){ }
    for(Control child:combo.getChildren()) if(child instanceof Text) {
     Text field=(Text)child;if(!combo.getEditable())field.clearSelection();field.setBackground(bg);field.setForeground(fg);
    }
@@ -325,6 +332,8 @@ public final class Startup implements IStartup {
  }
  private void menu(Menu m) {
   if(m.isDisposed() || (visibleOnly && !m.isVisible()))return;
+  nativeDark(m.getDisplay());
+  org.eclipse.swt.internal.win32.OS.AllowDarkModeForWindow(m.getShell().handle,true);
   try {
    java.lang.reflect.Method method=Menu.class.getDeclaredMethod("setBackground",Color.class);
    // Custom popup brushes force classic Windows disabled-text embossing.
@@ -341,6 +350,30 @@ public final class Startup implements IStartup {
    if((i.getStyle()&SWT.SEPARATOR)!=0){i.dispose();continue;}
    if(i.getMenu()!=null)menu(i.getMenu());
   }
+ }
+ private void nativeDark(Display display){
+  // Eclipse can reset these process flags after our startup/theme application.
+  // Restore immediately before native popups, rather than during every key press.
+  display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme",Boolean.TRUE);
+  display.setData("org.eclipse.swt.internal.win32.Combo.useDarkTheme",Boolean.TRUE);
+ }
+ private void nativeCombo(Control control){
+  if(control.isDisposed())return;nativeDark(control.getDisplay());
+  org.eclipse.swt.internal.win32.OS.AllowDarkModeForWindow(control.handle,true);
+  org.eclipse.swt.internal.win32.OS.SetWindowTheme(control.handle,(control instanceof Combo?"CFD\0":"\0").toCharArray(),null);
+  if(control instanceof Combo){
+   org.eclipse.swt.internal.win32.COMBOBOXINFO info=new org.eclipse.swt.internal.win32.COMBOBOXINFO();info.cbSize=org.eclipse.swt.internal.win32.COMBOBOXINFO.sizeof;
+   if(org.eclipse.swt.internal.win32.OS.GetComboBoxInfo(control.handle,info) && info.hwndList!=0){
+    org.eclipse.swt.internal.win32.OS.AllowDarkModeForWindow(info.hwndList,true);
+    org.eclipse.swt.internal.win32.OS.SetWindowTheme(info.hwndList,"\0".toCharArray(),null);
+    selectionPainter(control,info.hwndList);
+   }
+  }else if(control instanceof org.eclipse.swt.widgets.List)selectionPainter(control,control.handle);
+ }
+ private void selectionPainter(Control owner,long handle){
+  Object existing=owner.getData("salutem.selectionPainter");
+  if(existing instanceof NativeListSelection){if(((NativeListSelection)existing).matches(handle))return;((NativeListSelection)existing).close();}
+  owner.setData("salutem.selectionPainter",new NativeListSelection(owner,handle,()->accent,()->fg));
  }
  private boolean hasPalette(IFigure f,int depth) {
   if(f.getClass().getName().contains("palette"))return true;

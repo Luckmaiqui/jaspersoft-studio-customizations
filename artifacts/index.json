@@ -1,123 +1,123 @@
 {
   "schema": 1,
   "versions": {
-    "packageVersion": "2.6.0",
+    "packageVersion": "2.6.1",
     "studioVersion": "6.20.6.final",
     "javaMinimum": 17,
-    "theme": "2.2.0",
-    "language": "2.2.0",
+    "theme": "2.2.1",
+    "language": "2.2.1",
     "connectionOrder": "1.6.0",
-    "translationFragments": "2.1.0"
+    "translationFragments": "2.1.1"
   },
-  "sourceDigest": "ab9046bac224d4a7aaf32522d9a4e760fc8ee59d654ff023d8ba1d8a658a21f7",
+  "sourceDigest": "10277021b318b8600a618e4efe0084bb1fde2131f5866dbbd517e2594addd00a",
   "files": [
     {
       "path": "artifacts/plugins/com.salutem.jasper.connectionorder_1.6.0.jar",
       "sha256": "b3985a4a8bed8eb5557cd342988e0e8817a90e2ad92d67bbd8f861f6c90a6894"
     },
     {
-      "path": "artifacts/plugins/com.salutem.jasper.language.pt_BR_2.2.0.jar",
-      "sha256": "c36f348c1c5f387dd79cf88727de4c07eef1ca637b0ac2d31b484ceaa0c7026f"
+      "path": "artifacts/plugins/com.salutem.jasper.language.pt_BR_2.2.1.jar",
+      "sha256": "dbab7f42fd6641ebb4cd0d54d0bceb0af2d22e39a665738eaa5893d1eba5a179"
     },
     {
-      "path": "artifacts/plugins/com.salutem.jasper.theme.deepblue_2.2.0.jar",
-      "sha256": "b81fd6a3708fb684c4287b046a2d5bac2d949fbb10bd8dc559d7819f88b6a2e4"
+      "path": "artifacts/plugins/com.salutem.jasper.theme.deepblue_2.2.1.jar",
+      "sha256": "a10fb44565908a9399a2435e98ad749439c943f5c8d5580907cfef8b705367b5"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.babel.editor.pt_BR_2.1.0.jar",
-      "sha256": "490d393e152e07fafc853b681dbb6213c6e98e5dcb99fd76cf24440ad4965124"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.babel.editor.pt_BR_2.1.1.jar",
+      "sha256": "22b3496bfe72e26c1b8a58587b7230a9dd2eb9f857f9ab2129062c1458c71e2b"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.book.pt_BR_2.1.0.jar",
-      "sha256": "64b1499be9e5daf7876e2b891a5654ce4ed26477da93795cbc9e8ed22d12e0bb"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.book.pt_BR_2.1.1.jar",
+      "sha256": "7c60135cacdb64ecc964053ccdd19a66d89fc928d29cd3539a1c237761e4e8db"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.community.pt_BR_2.1.0.jar",
-      "sha256": "9dcf5094668e25cd66b5a964156958f5b5bf29d3cccf32704d84677ed4b703b8"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.community.pt_BR_2.1.1.jar",
+      "sha256": "212b2a4144c80f6925a3e6099660da681772dce3f56271d057dbffe7e32c689a"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.components.customvisualization.pt_BR_2.1.0.jar",
-      "sha256": "9c11a4b8516f89e3cbad8a9ac93b1db5a5de58205024438a17d37ae4947feffa"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.components.customvisualization.pt_BR_2.1.1.jar",
+      "sha256": "ceac0f778e745b3ee3ca128f348e136ee0d1d6a6854bfef99215c7b024388617"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.components.pt_BR_2.1.0.jar",
-      "sha256": "8485c6acfd6bccb14eb55885222ee80c778f82eab439c2ad2a57a0da98b3ebbc"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.components.pt_BR_2.1.1.jar",
+      "sha256": "1bd9b90e3e8bbc748720a6c6546459c71d69555ab3eaef08ee016556cea723d6"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.data.mongodb.pt_BR_2.1.0.jar",
-      "sha256": "1f6ca858ce7a7233112a7ac295155bbf5e70df21b48c2d8312b57114603a4e4c"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.data.mongodb.pt_BR_2.1.1.jar",
+      "sha256": "7a4e074ad973a5b75d1561e261da4dc285fa0413c6b19e2a6775a23692985734"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.data.pt_BR_2.1.0.jar",
-      "sha256": "ebf40a89d50341385f348fed0cc8e2e343c2dc01db24891a3356ff38804d49e8"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.data.pt_BR_2.1.1.jar",
+      "sha256": "c7a3b4e2f23b03a0c30c60b5105250a06f23a7b16dc889385bcb863c79eea604"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.data.sql.ui.pt_BR_2.1.0.jar",
-      "sha256": "d96af5d3cc0fbbafba2905ffb818606cc50602c78ad3f35c5f29c99ec0f76de7"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.data.sql.ui.pt_BR_2.1.1.jar",
+      "sha256": "2e7616d56430912f9b9ece4ea98031253a49b94f240551d6d61859fdff67e9a2"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.doc.pt_BR_2.1.0.jar",
-      "sha256": "22c56854e40f8d50e8f99898df075b8e9b275f2878895d56e785331984e82d83"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.doc.pt_BR_2.1.1.jar",
+      "sha256": "efe020317292c7408f01f31eb6ff6192fc5c513dac1d4423bd39d1625936237e"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.doc.samples.pt_BR_2.1.0.jar",
-      "sha256": "e9214140bb1663de29aacadf7ec3765c99c4a7823238c3a64555486df1217e5c"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.doc.samples.pt_BR_2.1.1.jar",
+      "sha256": "aabb891385a66eb8a4edf1a5c96878f7ff5c9c4c70881b9103576f5688191da8"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.editor.jrexpressions.pt_BR_2.1.0.jar",
-      "sha256": "8cef0a04ae7da54013929f5a1b8550d485b7e2db396c085092c843fa6af153d9"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.editor.jrexpressions.pt_BR_2.1.1.jar",
+      "sha256": "672a90be3b19fcb4a8fb886d1d452093d3faf5db05c45a83a3e8c6a55dc62006"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.editor.jrexpressions.ui.pt_BR_2.1.0.jar",
-      "sha256": "6e38ef20c13a2cb3ac532bfdd6dcd498e61a2cd08b2cc16d212313fcd7b334ab"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.editor.jrexpressions.ui.pt_BR_2.1.1.jar",
+      "sha256": "c5c8c1ea1cd776099d8321fbbbdfdf96aff778246f437943fddd66f5bfbf795d"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.hibernate.pt_BR_2.1.0.jar",
-      "sha256": "316ae335c80b8d79988db5eec0e0b0c41858b764be22f1a8cab83c67f1a46083"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.hibernate.pt_BR_2.1.1.jar",
+      "sha256": "0445e8dc1b13f01ea62f5f3293b1a1df5e1e7130a041de494cf8d94319c07cc9"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.html.pt_BR_2.1.0.jar",
-      "sha256": "e0b25813e7f6d778b21e1d025d6b94274389fdeb15a02cc2f877c937dbb4fcc6"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.html.pt_BR_2.1.1.jar",
+      "sha256": "bc8fe9493de6f70fe448ab02f18eba6f56e4908347270ba990b7f83379034038"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.properties.pt_BR_2.1.0.jar",
-      "sha256": "30e84af76944817dcea589280429703fc552bbaff1b23239c169b946747e22a1"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.properties.pt_BR_2.1.1.jar",
+      "sha256": "9c5a4a8533c9d76cf3ab92f15649abea1ccd9ce3433038ea15b56462ecec986a"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.pt_BR_2.1.0.jar",
-      "sha256": "7d966f9fa52754d86e8d3dbf8ea49fb665b4483a02402b61c00bcaee04e0f08a"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.pt_BR_2.1.1.jar",
+      "sha256": "b6f1d183cc8517d5f962aa8bd1bd2ee307fabe384f39f03d1fa89d3789674d8a"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.rcp.pt_BR_2.1.0.jar",
-      "sha256": "f80578f99268990e68a198859895c651c16500990487137af0b9ebacffd488a9"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.rcp.pt_BR_2.1.1.jar",
+      "sha256": "6ff7c820f4a8021b5d135381321a597b6e0ed1fa34d3f42e489cb2d88bbd682d"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.server.pt_BR_2.1.0.jar",
-      "sha256": "11715338a5a97bdb2a027ea895c29720a7d86c795297656695ec78131b32f94c"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.server.pt_BR_2.1.1.jar",
+      "sha256": "02518a42c121c2462613762d0ec715d3df98fa28415b66535dbd5c277958f76d"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.server.soap.pt_BR_2.1.0.jar",
-      "sha256": "fdf0cf76191eb59ec52eb8312b0be00fede8e5c1f9ddb8c5c7f91e4af18fcfae"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.server.soap.pt_BR_2.1.1.jar",
+      "sha256": "8a6988e435a2b17db61e04637581b9df687f257664055e5420ca0f9f6f45be8d"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.svgimporter.pt_BR_2.1.0.jar",
-      "sha256": "0471671476f647724aaf4a5b7d0adde57326d1c3bd1580161292901d4b55db34"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.svgimporter.pt_BR_2.1.1.jar",
+      "sha256": "6963a12a6955e21380d73127f80f02b9863aafa07feecda26afdefbbd6422b55"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.widgets.map.pt_BR_2.1.0.jar",
-      "sha256": "0316b0a815a7c6d8b25cbb7e6271a3a759424c94b7714712379b3f8719369a61"
+      "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.widgets.map.pt_BR_2.1.1.jar",
+      "sha256": "6b5129f5696058a2b6e2768e0a452b0e7ff33def52f9d2777de53eba855997fc"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.net.sf.jasperreports.pt_BR_2.1.0.jar",
-      "sha256": "eaa962a7b2200fce622a4213d3f6a7d46e74cba3820910b93097ec8b9d9eb619"
+      "path": "artifacts/plugins/com.salutem.l10n.net.sf.jasperreports.pt_BR_2.1.1.jar",
+      "sha256": "748255b70b34b9f1b75f6c0bd3126cb666ec9f1b5d37c218552d4f2da62b6fb3"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.net.sf.jasperreports.samples.pt_BR_2.1.0.jar",
-      "sha256": "4b445a8b0ea93476317bdb1014d070e42deb8cec5db58c95137062d774cb4a35"
+      "path": "artifacts/plugins/com.salutem.l10n.net.sf.jasperreports.samples.pt_BR_2.1.1.jar",
+      "sha256": "d0cf2013928e36a9b42f2418fbc83ea7f8300cab4cbf5e832a428032ba721de3"
     },
     {
-      "path": "artifacts/plugins/com.salutem.l10n.org.eclipse.gef.pt_BR_2.1.0.jar",
-      "sha256": "381be39ee9a81996dd74fb675ea6532fea10ac93e288147f923a45d404c2bbae"
+      "path": "artifacts/plugins/com.salutem.l10n.org.eclipse.gef.pt_BR_2.1.1.jar",
+      "sha256": "c25ce2d486b4ed38e87276c070d587e6301513f8de67fe237be92c7647191b95"
     },
     {
       "path": "vendor/eclipse-babel/org.eclipse.ant.core.nl_pt_BR_4.26.0.v20230220105658.jar",
