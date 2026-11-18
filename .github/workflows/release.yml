@@ -3,7 +3,7 @@ on:
   push:
     tags: ['v*']
     branches: ['main']
-    paths: ['jasperstudio-update-v2.6.1.zip']
+    paths: ['jasperstudio-update-v2.6.2.zip']
   workflow_dispatch:
     inputs:
       version:
@@ -30,15 +30,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Import verified 2.6.1 update
-        if: github.ref_type == 'branch' && (github.event_name == 'push' || inputs.version == '2.6.1')
+      - name: Import verified 2.6.2 update
+        if: github.ref_type == 'branch' && (github.event_name == 'push' || inputs.version == '2.6.2')
         shell: pwsh
         run: |
-          $archive = 'jasperstudio-update-v2.6.1.zip'
-          if ((Get-FileHash $archive).Hash -ne 'CEF9FB13558F7182F4B75A6C10120ACE6FED8A35A76041F8A72270C63513AFF7') { throw 'SHA256 inválido' }
+          $archive = 'jasperstudio-update-v2.6.2.zip'
+          if ((Get-FileHash $archive).Hash -ne '0F017F47D25CAD8011642D5708420A9A183E60B3B67FC8EB405D2DA6F0BBB233') { throw 'SHA256 inválido' }
           $stage = Join-Path $env:RUNNER_TEMP 'source-update'
           Expand-Archive -LiteralPath $archive -DestinationPath $stage
-          git rm --ignore-unmatch artifacts/plugins/com.salutem.jasper.theme.deepblue_2.2.0.jar artifacts/plugins/com.salutem.jasper.language.pt_BR_2.2.0.jar 'artifacts/plugins/com.salutem.l10n.*_2.1.0.jar'
+          git rm --ignore-unmatch artifacts/plugins/com.salutem.jasper.theme.deepblue_2.2.1.jar
           Get-ChildItem -LiteralPath $stage | Where-Object Name -notin @('.git','.github') | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination . -Recurse -Force }
           node scripts/Verify.mjs
           if ($LASTEXITCODE -ne 0) { throw 'Verificação falhou' }
@@ -47,7 +47,7 @@ jobs:
           git add --all -- ':!.github'
           git diff --cached --quiet
           if ($LASTEXITCODE -ne 0) {
-            git commit -m 'fix: seleções legíveis e estratégias Escrever 2.6.1'
+            git commit -m 'fix: preservar abertura dos combos durante atualização do tema 2.6.2'
             git push origin HEAD:main
             if ($LASTEXITCODE -ne 0) { throw 'Push falhou' }
           }
