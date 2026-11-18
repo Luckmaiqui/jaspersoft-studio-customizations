@@ -359,6 +359,13 @@ public final class Startup implements IStartup {
  }
  private void nativeCombo(Control control){
   if(control.isDisposed())return;nativeDark(control.getDisplay());
+  // SetWindowTheme sends WM_THEMECHANGED synchronously. Repeating it while the
+  // combo is processing a click, or while its popup is open, dismisses the list.
+  // Configure each native list handle once; palette colours are supplied live
+  // by NativeListSelection and do not require resetting the Windows theme.
+  if(control instanceof Combo && ((Combo)control).getListVisible())return;
+  Object configured=control.getData("salutem.nativeListTheme");
+  if(configured instanceof Long && ((Long)configured).longValue()==control.handle)return;
   org.eclipse.swt.internal.win32.OS.AllowDarkModeForWindow(control.handle,true);
   org.eclipse.swt.internal.win32.OS.SetWindowTheme(control.handle,(control instanceof Combo?"CFD\0":"\0").toCharArray(),null);
   if(control instanceof Combo){
@@ -367,8 +374,9 @@ public final class Startup implements IStartup {
     org.eclipse.swt.internal.win32.OS.AllowDarkModeForWindow(info.hwndList,true);
     org.eclipse.swt.internal.win32.OS.SetWindowTheme(info.hwndList,"\0".toCharArray(),null);
     selectionPainter(control,info.hwndList);
+    control.setData("salutem.nativeListTheme",Long.valueOf(control.handle));
    }
-  }else if(control instanceof org.eclipse.swt.widgets.List)selectionPainter(control,control.handle);
+  }else if(control instanceof org.eclipse.swt.widgets.List){selectionPainter(control,control.handle);control.setData("salutem.nativeListTheme",Long.valueOf(control.handle));}
  }
  private void selectionPainter(Control owner,long handle){
   Object existing=owner.getData("salutem.selectionPainter");

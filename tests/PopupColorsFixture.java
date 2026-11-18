@@ -13,7 +13,9 @@ public class PopupColorsFixture {
   Button open=new Button(shell,SWT.PUSH);open.setText("Abrir Menu Após Redefinição do Eclipse");GridData width=new GridData(SWT.FILL,SWT.CENTER,true,false);width.horizontalSpan=2;open.setLayoutData(width);
   Menu popup=new Menu(shell,SWT.POP_UP);for(String name:new String[]{"Salvar\tCtrl+S","Salvar Todos\tCtrl+Shift+S","Configurações"}){MenuItem item=new MenuItem(popup,SWT.PUSH);item.setText(name);item.setEnabled(name.equals("Configurações"));}
   open.addListener(SWT.Selection,e->{try{d.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme",Boolean.FALSE);menuTheme.invoke(theme,popup);popup.setLocation(open.toDisplay(0,open.getSize().y));popup.setVisible(true);}catch(Exception error){throw new RuntimeException(error);}});
-  visit.invoke(theme,shell);shell.open();if(args.length>0 && args[0].equals("--menu"))open.notifyListeners(SWT.Selection,new Event());while(!shell.isDisposed())if(!d.readAndDispatch())d.sleep();d.dispose();
+  d.addFilter(SWT.MouseDown,e->{if(e.widget instanceof Combo || e.widget instanceof org.eclipse.swt.widgets.List)try{Method m=theme.getClass().getDeclaredMethod("nativeCombo",Control.class);m.setAccessible(true);m.invoke(theme,e.widget);}catch(Exception error){throw new RuntimeException(error);}});
+  Runnable refresh=new Runnable(){public void run(){if(shell.isDisposed())return;try{visit.invoke(theme,shell);}catch(Exception error){throw new RuntimeException(error);}d.timerExec(100,this);}};
+  visit.invoke(theme,shell);shell.open();d.timerExec(100,refresh);if(args.length>0 && args[0].equals("--menu"))open.notifyListeners(SWT.Selection,new Event());while(!shell.isDisposed())if(!d.readAndDispatch())d.sleep();d.dispose();
  }
 }
 
