@@ -82,6 +82,8 @@ public final class Startup implements IStartup {
   editors.put("currentLineColor",rgbString(palette.accent));
  }
  private boolean dark(Color c) { return c.getRed()+c.getGreen()+c.getBlue()<330; }
+ /** Palette background, unless the user chose a colour for this control's block (CustomColors). */
+ private Color surface(Control c) { return CustomColors.background(c,bg); }
  private void visitVisible(Control c){
   if(c.isDisposed())return;
   ThemePalette palette=ThemePalette.find(InstanceScope.INSTANCE.getNode("org.eclipse.e4.ui.css.swt.theme").get("themeid", ""));
@@ -115,7 +117,7 @@ public final class Startup implements IStartup {
   if(isPublishingDatasource(c) || (c instanceof TabFolder && containsDatasourcePanel((Composite)c,0))) publishColors(c);
   if(name.startsWith("org.eclipse.nebula.widgets.gallery.")) gallery(c);
   if(c instanceof Scale || c instanceof Slider) {
-   c.setBackground(bg);c.setForeground(fg);c.getParent().setBackground(bg);
+   c.setBackground(bg);c.setForeground(fg);c.getParent().setBackground(surface(c.getParent()));
   }
   if(c instanceof Scrollable && c.getData("salutem.nativeTheme")==null) {
    if(c instanceof Combo || c instanceof org.eclipse.swt.widgets.List)nativeCombo(c);
@@ -138,10 +140,10 @@ public final class Startup implements IStartup {
   }
   if(c instanceof org.eclipse.swt.custom.CTabFolder) {
    org.eclipse.swt.custom.CTabFolder tabs=(org.eclipse.swt.custom.CTabFolder)c;
-   tabs.setSelectionBackground(bg);tabs.setSelectionForeground(fg);
+   tabs.setSelectionBackground(tabs.getItemCount()==0?surface(c):bg);tabs.setSelectionForeground(fg);
   }
   if(c instanceof org.eclipse.swt.custom.CLabel) {
-   ((org.eclipse.swt.custom.CLabel)c).setBackground(bg);c.setForeground(fg);
+   ((org.eclipse.swt.custom.CLabel)c).setBackground(surface(c));c.setForeground(fg);
   }
   if(c instanceof CCombo) {
    CCombo combo=(CCombo)c;
@@ -160,7 +162,7 @@ public final class Startup implements IStartup {
    c.setBackground(bg);c.setForeground(fg);
   }
   if(c instanceof org.eclipse.swt.custom.CLabel && inProperties(c)) {
-   ((org.eclipse.swt.custom.CLabel)c).setBackground(bg);c.setForeground(fg);
+   ((org.eclipse.swt.custom.CLabel)c).setBackground(surface(c));c.setForeground(fg);
   }
   if(c instanceof Table) {
    Table t=(Table)c;
@@ -168,7 +170,7 @@ public final class Startup implements IStartup {
    t.setHeaderBackground(bg); t.setHeaderForeground(fg);
   }
   if(c instanceof Text && (c.getStyle()&SWT.PASSWORD)!=0) {c.setBackground(bg);c.setForeground(fg);}
-  if(c instanceof ToolBar || c instanceof org.eclipse.swt.widgets.CoolBar) {c.setBackground(bg);c.setForeground(fg);}
+  if(c instanceof ToolBar || c instanceof org.eclipse.swt.widgets.CoolBar) {c.setBackground(surface(c));c.setForeground(fg);}
   if(c instanceof Button && (c.getStyle()&SWT.PUSH)!=0 && name.contains("preview")) c.setBackground(bg);
   if(name.startsWith("org.eclipse.jface.text.source.") || name.contains("ViewerCanvas") || name.contains("FlyoutPaletteComposite$TitleCanvas")) {
    c.setBackground(bg);c.setForeground(fg);
@@ -254,7 +256,8 @@ public final class Startup implements IStartup {
   return false;
  }
  private void publishColors(Control control) {
-  if(!bg.equals(control.getBackground()))control.setBackground(bg);
+  Color surface=surface(control);
+  if(!surface.equals(control.getBackground()))control.setBackground(surface);
   if(!fg.equals(control.getForeground()))control.setForeground(fg);
   if(control instanceof Composite) {
    Composite composite=(Composite)control;
@@ -419,7 +422,7 @@ public final class Startup implements IStartup {
   return false;
  }
  private void propertyColors(Control c) {
-  Color surface=(c instanceof Label && (c.getStyle()&SWT.SEPARATOR)!=0)?border:bg;
+  Color surface=(c instanceof Label && (c.getStyle()&SWT.SEPARATOR)!=0)?border:surface(c);
   if(!c.getBackground().equals(surface))c.setBackground(surface);
   if(!c.getForeground().equals(fg))c.setForeground(fg);
   // The header paints its own gradient rather than the Control background.

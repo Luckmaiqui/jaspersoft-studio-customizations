@@ -32,9 +32,14 @@ public final class CustomColors {
  static final String EDITOR_AREA="org.eclipse.ui.editorss";
  /** Widget data key set by the E4 renderers (AbstractPartRenderer.OWNING_ME). */
  static final String OWNER="modelElement";
+ /** Widget data: id of the block whose chosen colour this control carries. */
  private static final String PAINTED="salutem.customColor";
  private static boolean installed,queued;
  private static final Map<Integer,Color> POOL=new HashMap<>();
+ /** Stored entries ("id|label|RRGGBB" lines). Replaceable by tests that run without the OSGi platform. */
+ static java.util.function.Supplier<String> stored=()->preferences().get(KEY,"");
+ private static String activeValue;
+ private static Map<String,RGB> active=Collections.emptyMap();
 
  /** One stored block: model element id, readable label and RGB colour. */
  public static final class Entry {
@@ -50,9 +55,10 @@ public final class CustomColors {
  static IEclipsePreferences preferences(){return InstanceScope.INSTANCE.getNode(NODE);}
 
  /** Format: id|label|RRGGBB, one entry per line. */
- public static List<Entry> load(){
+ public static List<Entry> load(){return parseEntries(stored.get());}
+ static List<Entry> parseEntries(String value){
   List<Entry> entries=new ArrayList<>();
-  for(String line:preferences().get(KEY,"").split("\n")){
+  for(String line:value.split("\n")){
    String[] parts=line.split("\\|");
    if(parts.length!=3 || parts[0].isEmpty())continue;
    RGB rgb=parse(parts[2]);if(rgb!=null)entries.add(new Entry(parts[0],parts[1],rgb));
@@ -97,7 +103,34 @@ public final class CustomColors {
  private static void heartbeat(Display display){
   display.timerExec(2000,()->{if(display.isDisposed())return;if(hasEntries())applyAll(display);heartbeat(display);});
  }
- private static boolean hasEntries(){return !preferences().get(KEY,"").isEmpty();}
+ private static boolean hasEntries(){return !stored.get().isEmpty();}
+
+ /** Active choices by block id, re-read only when the stored value changes. */
+ private static Map<String,RGB> active(){
+  String value=stored.get();
+  if(!value.equals(activeValue)){
+   Map<String,RGB> map=new HashMap<>();for(Entry e:parseEntries(value))map.put(e.id,e.rgb);
+   active=map;activeValue=value;
+  }
+  return active;
+ }
+
+ /**
+  * Background chosen by the user for this control, or null when it has none.
+  * Every routine that paints control backgrounds (Salutem palettes included) uses
+  * this instead of its own colour, so no later repaint removes the choice. The
+  * mark alone is not trusted: once a choice is removed this returns null at once.
+  */
+ public static Color background(Control control){
+  Object id=control.getData(PAINTED);
+  if(!(id instanceof String))return null;
+  RGB rgb=active().get(id);
+  return rgb==null?null:color(control.getDisplay(),rgb);
+ }
+ /** The chosen background if any, otherwise the theme colour given. */
+ public static Color background(Control control,Color theme){
+  Color chosen=background(control);return chosen!=null?chosen:theme;
+ }
  static void schedule(Display display,int delay){
   if(queued || display.isDisposed())return;queued=true;
   display.timerExec(delay,()->{queued=false;if(!display.isDisposed())applyAll(display);});
@@ -109,13 +142,17 @@ public final class CustomColors {
  }
 
  static void applyAll(Display display){
-  Map<String,RGB> wanted=new HashMap<>();for(Entry e:load())wanted.put(e.id,e.rgb);
+  List<Object[]> roots=new ArrayList<>();
+  for(Map.Entry<String,RGB> entry:active().entrySet())
+   for(Control root:widgets(entry.getKey()))roots.add(new Object[]{root,entry.getKey(),entry.getValue()});
+  // Outer blocks first, so the most specific block wins whatever the stored order.
+  roots.sort(Comparator.comparingInt(r->depth((Control)r[0])));
   Set<Control> painted=Collections.newSetFromMap(new IdentityHashMap<>());
-  for(Map.Entry<String,RGB> entry:wanted.entrySet())
-   for(Control root:widgets(entry.getKey()))paint(root,color(display,entry.getValue()),root,painted);
+  for(Object[] r:roots)paint((Control)r[0],(String)r[1],color(display,(RGB)r[2]),(Control)r[0],painted);
   // Blocks whose colour was removed go back to the theme.
   for(Shell shell:display.getShells())restore(shell,painted);
  }
+ private static int depth(Control control){int depth=0;for(Control c=control;c!=null;c=c.getParent())depth++;return depth;}
 
  /** Widgets of every model element with this id, in every workbench window. */
  static List<Control> widgets(String id){
@@ -131,7 +168,7 @@ public final class CustomColors {
   return controls;
  }
 
- private static void paint(Control control,Color color,Control root,Set<Control> painted){
+ static void paint(Control control,String id,Color color,Control root,Set<Control> painted){
   if(control.isDisposed())return;
   // Never enter another part's content (e.g. the report designer inside the editor area).
   if(control!=root && control.getData(OWNER) instanceof MPart && !(root.getData(OWNER) instanceof MPart))return;
@@ -141,16 +178,22 @@ public final class CustomColors {
     CTabFolder tabs=(CTabFolder)control;
     if(tabs.getItemCount()==0 && !color.equals(tabs.getSelectionBackground()))tabs.setSelectionBackground(color);
    }
-   control.setData(PAINTED,Boolean.TRUE);painted.add(control);
+   control.setData(PAINTED,id);painted.add(control);
   }
-  if(control instanceof Composite)for(Control child:((Composite)control).getChildren())paint(child,color,root,painted);
+  if(control instanceof Composite)for(Control child:((Composite)control).getChildren())paint(child,id,color,root,painted);
  }
- private static void restore(Control control,Set<Control> painted){
+ static void restore(Control control,Set<Control> painted){
   if(control.isDisposed())return;
   if(control.getData(PAINTED)!=null && !painted.contains(control)){
-   control.setData(PAINTED,null);control.reskin(SWT.ALL);return;
+   clear(control,painted);control.reskin(SWT.ALL);return;
   }
   if(control instanceof Composite)for(Control child:((Composite)control).getChildren())restore(child,painted);
+ }
+ /** Forgets removed choices in the whole subtree; controls still painted in this pass keep theirs. */
+ private static void clear(Control control,Set<Control> painted){
+  if(control.isDisposed())return;
+  if(!painted.contains(control))control.setData(PAINTED,null);
+  if(control instanceof Composite)for(Control child:((Composite)control).getChildren())clear(child,painted);
  }
 
  /** Containers and plain labels only: content widgets keep their colours. */
