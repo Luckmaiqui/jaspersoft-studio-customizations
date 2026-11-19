@@ -78,7 +78,8 @@ if(-not $PackageOnly){
         $arguments=@('-17','-encoding','UTF-8','-classpath',('"'+$classpath+'"'),'-d',('"'+$stage.Replace('\','/')+'"'))
         $arguments+=@(Get-ChildItem -LiteralPath (Join-Path $module 'src') -Recurse -File -Filter '*.java'|ForEach-Object{'"'+$_.FullName.Replace('\','/')+'"'})
         [IO.File]::WriteAllText($argfile,($arguments -join "`n"),(New-Object Text.UTF8Encoding($false)))
-        & $java -jar $compiler.FullName ('@'+$argfile)
+        # The argument file is UTF-8; without this the JVM reads it in the Windows ANSI code page and accented paths break.
+        & $java '-Dfile.encoding=UTF-8' -jar $compiler.FullName ('@'+$argfile)
         if($LASTEXITCODE -ne 0){throw "Compilação falhou: $($spec.Name)"}
         # Compiler arguments are build metadata, not part of the plug-in.
         $bundle=Join-Path $root ('build/bundle-'+$spec.Name+'-'+[guid]::NewGuid())
