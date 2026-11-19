@@ -7,6 +7,7 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.e4.ui.model.application.ui.basic.impl.BasicFactoryImpl;
+import org.eclipse.draw2d.FigureCanvas;
 
 /**
  * Cor personalizada por bloco × pintura das paletas Salutem (Startup).
@@ -40,7 +41,7 @@ public class CheckCustomColors {
     check(all(chosen,custom)&&custom.equals(emptyTabs.getSelectionBackground()),"limite MPart protege a visão da cor do ancestral ("+(partFirst?"visão antes":"pilha antes")+")");
    }
    check(stack.getBackground().equals(ancestor),"pilha ancestral recebe a própria cor");
-   check(custom.equals(CustomColors.background(toolbar))&&CustomColors.background(table)==null&&CustomColors.background(text)==null,"consulta central: só controles estruturais do bloco têm cor escolhida");
+   check(custom.equals(CustomColors.background(toolbar))&&custom.equals(CustomColors.background(table))&&CustomColors.background(text)==null,"consulta central: contêineres e conteúdo só de leitura (Table) do bloco têm a cor escolhida; campo editável não");
 
    // Rotina Salutem com fundo 13,17,23 não retira a escolha, nas duas ordens e em várias passagens.
    Object startup=Class.forName("com.salutem.theme.Startup").getConstructor().newInstance();
@@ -56,8 +57,11 @@ public class CheckCustomColors {
     if(!all(chosen,custom)||!custom.equals(emptyTabs.getSelectionBackground())){stable=false;System.out.println("  passagem "+pass+": toolbar="+toolbar.getBackground().getRGB()+" clabel="+label.getBackground().getRGB());}
    }
    check(stable,"ToolBar, CLabel, painel e abas vazias mantêm RGB 20,150,90 após extras, visit, publishColors e propertyColors (6 passagens, ordens alternadas)");
-   check(label.getForeground().equals(fg),"texto do CLabel continua com a cor da paleta");
-   check(table.getBackground().getRGB().equals(tableBefore)&&text.getBackground().getRGB().equals(textBefore)&&text.getText().equals("Conteudo preservado"),"Table e Text sem pintura de contêiner e texto preservado");
+   // Texto da paleta (230,237,243) sobre 20,150,90 tem contraste 3,2:1: vira preto (5,5:1), também nas rotinas Salutem.
+   check(label.getForeground().getRGB().equals(new RGB(0,0,0)),"texto do CLabel legível sobre a cor escolhida (preto, contraste >= 4,5:1) depois das rotinas Salutem");
+   check(CustomColors.readable(fg,ancestor)==fg&&CustomColors.readable(fg,custom).getRGB().equals(new RGB(0,0,0))&&CustomColors.readable(palette,palette).getRGB().equals(new RGB(255,255,255)),"contraste: cor do tema mantida quando legível (6,8:1), senão preto ou branco");
+   check(table.getBackground().equals(custom)&&!tableBefore.equals(custom.getRGB()),"Table (conteúdo nativo só de leitura) recebe a cor do bloco");
+   check(text.getBackground().getRGB().equals(textBefore)&&text.getText().equals("Conteudo preservado"),"Text editável mantém o fundo e o texto");
 
    // Motor CSS: o listener de Skin dele é registrado antes do nosso (o workbench sobe antes dos IStartup).
    Color cssGrey=new Color(display,72,72,76);
@@ -90,7 +94,7 @@ public class CheckCustomColors {
     };
     org.eclipse.e4.ui.services.IStylingEngine styling=new CustomColors.Styling(fakeCss);
     styling.setClassname(stack,"MPartStack active");
-    check(all(chosen,custom)&&stack.getBackground().equals(ancestor)&&table.getBackground().equals(cssGrey),"ativação pelo serviço de estilo: cor escolhida volta na mesma chamada, conteúdo fica com o CSS");
+    check(all(chosen,custom)&&stack.getBackground().equals(ancestor)&&table.getBackground().equals(custom)&&text.getBackground().equals(cssGrey),"ativação pelo serviço de estilo: cor escolhida volta na mesma chamada (Table inclusive), campo editável fica com o CSS");
     styling.setClassnameAndId(part,"MPart","x");
     check(all(chosen,custom),"setClassnameAndId: mesma garantia");
     // Passagem rápida (filtros de ativação/foco) como reserva.
@@ -105,6 +109,35 @@ public class CheckCustomColors {
    CustomColors.paint(part,"view",custom,part,Collections.newSetFromMap(new IdentityHashMap<>()));
    check(plain.getBackground().equals(custom),"contêiner sem regra de CSS recebe a cor");
 
+   // Conteúdo desenhado por outros mecanismos: árvore nativa (Win32), texto só de leitura, painel que força
+   // o fundo nos filhos (seções de Propriedades), título com degradê e paleta Draw2D (GEF).
+   Color themeText=new Color(display,170,170,170);
+   Tree tree=new Tree(part,SWT.NONE);new TreeColumn(tree,SWT.NONE);tree.setHeaderVisible(true);new TreeItem(tree,SWT.NONE).setText("Data Adapters");tree.setForeground(themeText);
+   Text readOnly=new Text(part,SWT.READ_ONLY|SWT.MULTI);readOnly.setText("console");
+   Composite forced=new Composite(part,SWT.NONE);forced.setBackgroundMode(SWT.INHERIT_FORCE);Text field=new Text(forced,SWT.BORDER);field.setText("0 px");field.setForeground(themeText);
+   CLabel titled=new CLabel(part,SWT.NONE);Color top=new Color(display,250,250,250),bottom=new Color(display,220,220,220);titled.setBackground(new Color[]{top,bottom},new int[]{100},true);
+   FigureCanvas canvas=new FigureCanvas(part);canvas.setContents(new paletteFigure());
+   Color bar=new Color(display,60,60,60);
+   org.eclipse.ui.forms.widgets.Section section=new org.eclipse.ui.forms.widgets.Section(part,org.eclipse.ui.forms.widgets.Section.TITLE_BAR);section.setText("Location");
+   section.setTitleBarBackground(bar);section.setTitleBarGradientBackground(bar);
+   Button check=new Button(part,SWT.CHECK);check.setText("Transparent");check.setBackground(bar);
+   CustomColors.paint(part,"view",custom,part,Collections.newSetFromMap(new IdentityHashMap<>()));
+   check(custom.equals(section.getTitleBarBackground())&&custom.equals(section.getTitleBarGradientBackground())&&check.getBackground().equals(custom),"seção de Propriedades (Eclipse Forms): barra de título com a cor escolhida; caixa de seleção sem o quadrado do tema");
+   check(tree.getBackground().equals(custom)&&custom.equals(tree.getHeaderBackground())&&tree.getForeground().getRGB().equals(new RGB(0,0,0)),"árvore nativa: fundo, cabeçalho e texto legível (cinza 1,6:1 vira preto)");
+   check(readOnly.getBackground().equals(custom)&&readOnly.getText().equals("console"),"texto só de leitura recebe a cor e mantém o conteúdo");
+   check(field.getBackground().equals(custom)&&field.getForeground().getRGB().equals(new RGB(0,0,0))&&CustomColors.background(field)==null&&field.getText().equals("0 px"),"campo editável que herda o fundo forçado: só o texto fica legível, sem marcar o campo");
+   check(gradient(titled)==null&&titled.getBackground().equals(custom),"CLabel com degradê (título de Propriedades) recebe a cor");
+   check(canvas.getContents() instanceof PaletteSurface&&paletteFill(canvas,display).equals(custom.getRGB()),"paleta Draw2D: a figura pinta a cor escolhida no lugar do branco fixo");
+   extras.invoke(startup,tree);
+   check(tree.getItem(0).getBackground(0).equals(custom)&&custom.equals(tree.getHeaderBackground())&&tree.getItem(0).getForeground(0).getRGB().equals(new RGB(0,0,0)),"rotina Salutem da árvore usa a consulta: itens e cabeçalho com a cor escolhida, texto legível");
+   // Editor de relatório (outra parte) com figuras Draw2D dentro da área pintada: fica de fora.
+   Composite editor=new Composite(stack,SWT.NONE);editor.setData(CustomColors.OWNER,BasicFactoryImpl.eINSTANCE.createPart());
+   FigureCanvas designer=new FigureCanvas(editor);designer.setContents(new paletteFigure());RGB designerBefore=designer.getBackground().getRGB();
+   CustomColors.paint(stack,"stack",ancestor,stack,Collections.newSetFromMap(new IdentityHashMap<>()));
+   check(!(designer.getContents() instanceof PaletteSurface)&&designer.getBackground().getRGB().equals(designerBefore)&&CustomColors.background(designer)==null,"limite MPart: figuras Draw2D do editor de relatório não são tocadas");
+   editor.dispose();
+   check(tree.getBackground().equals(custom)&&readOnly.getBackground().equals(custom)&&custom.equals(CustomColors.background(tree)),"limite MPart: a cor da pilha ancestral não entra na árvore nem no texto da visão");
+
    // Remoção: a paleta volta a valer na mesma hora, mesmo antes da passagem de restauração.
    stored[0]="stack|Pilha|7828A0";
    extras.invoke(startup,toolbar);extras.invoke(startup,label);
@@ -114,6 +147,14 @@ public class CheckCustomColors {
    boolean cleared=true;for(Control c:chosen)cleared&=CustomColors.background(c)==null;
    check(cleared&&ancestor.equals(CustomColors.background(stack)),"restauração limpa o estado da visão removida e mantém o da pilha");
    check(!plain.getBackground().equals(custom)&&!plain.getBackground().equals(ancestor),"contêiner sem regra de CSS perde a cor removida (fundo padrão)");
+   Color listText=display.getSystemColor(SWT.COLOR_LIST_FOREGROUND);
+   check(!tree.getBackground().equals(custom)&&!custom.equals(tree.getHeaderBackground())&&tree.getData("salutem.customForeground")==null&&tree.getForeground().equals(listText)&&!tree.getItem(0).getBackground(0).equals(custom)&&tree.getItem(0).getForeground(0).equals(listText),"cor removida: árvore volta ao fundo, cabeçalho e texto padrão, itens inclusive");
+   check(field.getData("salutem.customForeground")==null&&field.getForeground().equals(listText),"cor removida: campo herdado volta ao texto padrão");
+   check(gradient(titled)!=null,"cor removida: CLabel recupera o degradê");
+   check(paletteFill(canvas,display).equals(new RGB(255,255,255)),"cor removida: paleta Draw2D volta às cores próprias");
+   check(bar.equals(section.getTitleBarBackground())&&bar.equals(section.getTitleBarGradientBackground())&&!check.getBackground().equals(custom),"cor removida: seção recupera a barra de título e a caixa de seleção perde a cor");
+   section.dispose();check.dispose();
+   for(Color c:new Color[]{themeText,top,bottom,bar})c.dispose();
    setPalette(startup,otherPalette,fg);
    visit.invoke(startup,part);
    check(toolbar.getBackground().equals(otherPalette)&&label.getBackground().equals(otherPalette)&&panelLabel.getBackground().equals(otherPalette),"após remover, troca de paleta aplica o fundo da nova paleta");
@@ -131,6 +172,18 @@ public class CheckCustomColors {
   if(failures>0)System.exit(2);
  }
 
+ /** Draw2D figure named like the GEF palette figures (the class name contains "palette"): opaque white. */
+ public static class paletteFigure extends org.eclipse.draw2d.Figure {
+  paletteFigure(){setOpaque(true);setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);}
+ }
+ /** Colour the canvas contents paint at one point, through the same Draw2D painting as on screen. */
+ static RGB paletteFill(FigureCanvas canvas,Display display){
+  org.eclipse.draw2d.IFigure root=canvas.getContents();root.setBounds(new org.eclipse.draw2d.geometry.Rectangle(0,0,40,20));root.validate();
+  Image image=new Image(display,40,20);GC gc=new GC(image);org.eclipse.draw2d.SWTGraphics graphics=new org.eclipse.draw2d.SWTGraphics(gc);
+  try{root.paint(graphics);}finally{graphics.dispose();gc.dispose();}
+  ImageData data=image.getImageData();RGB rgb=data.palette.getRGB(data.getPixel(10,10));image.dispose();return rgb;
+ }
+ static Object gradient(CLabel label)throws Exception{Field field=CLabel.class.getDeclaredField("gradientColors");field.setAccessible(true);return field.get(label);}
  static boolean all(Control[] controls,Color color){for(Control c:controls)if(!c.getBackground().equals(color))return false;return true;}
  static Method method(Object startup,String name)throws Exception{Method m=startup.getClass().getDeclaredMethod(name,Control.class);m.setAccessible(true);return m;}
  static void setPalette(Object startup,Color background,Color foreground)throws Exception{
