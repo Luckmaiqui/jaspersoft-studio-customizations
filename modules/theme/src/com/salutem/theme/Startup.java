@@ -23,6 +23,8 @@ public final class Startup implements IStartup {
  private java.lang.reflect.Field customComboList;
  public void earlyStartup() {
   Display d=Display.getDefault();
+  // Block colours chosen by the user apply to any theme, not only Salutem palettes.
+  d.asyncExec(()->CustomColors.install(d));
   d.asyncExec(new Runnable() { public void run() {
    if(d.isDisposed()) return;
    ThemePalette palette=ThemePalette.find(InstanceScope.INSTANCE.getNode("org.eclipse.e4.ui.css.swt.theme").get("themeid", ""));

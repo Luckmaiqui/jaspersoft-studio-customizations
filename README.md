@@ -8,10 +8,10 @@ Baixe em [Releases](https://github.com/Luckmaiqui/pacote-de-atualizacoes-do-jasp
 
 | ZIP | Pasta | Conteúdo |
 |---|---|---|
-| JS-Temas-v2.6.3.zip | Temas | Noite, Grafite, Floresta, Ameixa, GitHub, Ônix e Meia-Noite |
-| JS-Traducao-ptBR-v2.6.3.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
-| JS-Ordenacao-v2.6.3.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
-| JS-Pacotes-Separados-v2.6.3.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
+| JS-Temas-v2.7.0.zip | Temas | Noite, Grafite, Floresta, Ameixa, GitHub, Ônix e Meia-Noite, mais cor personalizada por bloco |
+| JS-Traducao-ptBR-v2.7.0.zip | Traducao-ptBR | Tradução para Português (Brasil) e bandeira |
+| JS-Ordenacao-v2.7.0.zip | Ordenacao-de-conexoes | Pesquisa por código/nome no preview e dataset, mais ordenação numérica |
+| JS-Pacotes-Separados-v2.7.0.zip | Pacote de Atualizações do JasperStudio | As três pastas acima, com instaladores separados |
 
 Cada pasta tem **Instalar.bat** e **Abrir JS.bat** próprios. Você pode instalar apenas uma, duas ou todas. O pacote de temas não instala tradução nem muda o idioma. O pacote de tradução não instala nem seleciona tema. A ordenação também é independente.
 
@@ -72,3 +72,11 @@ Os temas novos têm fundos próximos ao preto. O GitHub se inspira nas cores do 
 A versão 2.6.0 reduz varreduras repetidas da interface, agrupa atualizações e reutiliza traduções e cores. O Abrir JS.bat usa -clean apenas na primeira abertura ou após atualização dos complementos. Instalação e atualizações continuam com hashes verificados. Veja as medições e seus limites em [Desempenho](docs/DESEMPENHO.md).
 
 Correção 2.6.1: restaura o desenho escuro dos menus e o destaque legível nas listas de seleção; os rótulos de publicação usam Escrever e Escrever Apenas Expressão. A ordem e os valores das opções permanecem os mesmos.
+
+## Cor personalizada por bloco
+
+Disponível no pacote Temas a partir da 2.7.0 e funciona com qualquer tema, inclusive o escuro padrão do Eclipse. Use **Janela > Escolher cor de um bloco...**: o bloco sob o mouse (área do editor, visões e pilhas de abas) recebe um contorno vermelho; clique para abrir o seletor de cores. Esc ou o botão direito cancelam. Clicar em qualquer ponto do editor escolhe a área do editor inteira.
+
+O seletor tem quadro de saturação e brilho, barra de matiz, código hexadecimal (`#RRGGBB`, `RRGGBB` ou `#RGB`), campos R, G e B, prévia Atual/Nova, cores básicas, as 10 últimas cores usadas e conta-gotas para pegar a cor de qualquer ponto da tela, com lupa. Enter aplica e Esc cancela.
+
+Os blocos coloridos ficam em **Janela > Preferências > Gerais > Aparência > Cores personalizadas**, onde é possível alterar, remover ou restaurar tudo; ao remover, o bloco volta às cores do tema. Só fundos de contêineres e rótulos simples são pintados: o conteúdo do relatório, árvores, tabelas, campos e textos mantêm as cores do tema.
