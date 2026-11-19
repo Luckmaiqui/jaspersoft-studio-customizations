@@ -135,7 +135,25 @@ public class CheckCustomColors {
    FigureCanvas designer=new FigureCanvas(editor);designer.setContents(new paletteFigure());RGB designerBefore=designer.getBackground().getRGB();
    CustomColors.paint(stack,"stack",ancestor,stack,Collections.newSetFromMap(new IdentityHashMap<>()));
    check(!(designer.getContents() instanceof PaletteSurface)&&designer.getBackground().getRGB().equals(designerBefore)&&CustomColors.background(designer)==null,"limite MPart: figuras Draw2D do editor de relatório não são tocadas");
-   editor.dispose();
+   // Fundo do designer (CODEX-20261119-07#4): alvo próprio, só o fundo do canvas em volta da página.
+   FigureCanvas surface=new FigureCanvas(editor);org.eclipse.draw2d.Figure layers=new org.eclipse.draw2d.Figure();ReportPageFigure page=new ReportPageFigure();layers.add(page);surface.setContents(layers);
+   Color pageText=new Color(display,40,40,40);page.setForegroundColor(pageText);
+   RGB surfaceText=surface.getForeground().getRGB();
+   check(CustomColors.designer(surface)&&!CustomColors.designer(designer)&&!CustomColors.designer(canvas),"designer reconhecido pela figura da página; paleta e outros canvas Draw2D não");
+   CustomColors.reapply(surface);
+   check(!surface.getBackground().getRGB().equals(new RGB(0x33,0x55,0xAA))&&CustomColors.background(surface)==null,"sem escolha do designer, o canvas fica com o tema");
+   stored[0]=stored[0]+"\n"+CustomColors.DESIGNER+"|Fundo do designer|3355AA";
+   CustomColors.reapply(surface);
+   check(surface.getBackground().getRGB().equals(new RGB(0x33,0x55,0xAA))&&surface.getForeground().getRGB().equals(surfaceText)&&!(surface.getContents() instanceof PaletteSurface),"fundo do designer: só o fundo do canvas muda (texto do canvas e figuras sem envelope)");
+   check(page.getBackgroundColor().getRGB().equals(new RGB(255,255,255))&&page.getForegroundColor().equals(pageText)&&layers.getChildren().size()==1,"página e elementos do relatório sem alteração");
+   CustomColors.paint(stack,"stack",ancestor,stack,Collections.newSetFromMap(new IdentityHashMap<>()));
+   check(surface.getBackground().getRGB().equals(new RGB(0x33,0x55,0xAA))&&CustomColors.DESIGNER.equals(surface.getData("salutem.customColor")),"cor da área do editor não substitui a do designer (limite MPart)");
+   Color cssCanvas=new Color(display,47,47,47);surface.setBackground(cssCanvas);
+   Listener cssDesigner=e->{if(e.widget==surface)surface.setBackground(cssCanvas);};
+   display.addListener(SWT.Skin,cssDesigner);display.addListener(SWT.Skin,CustomColors.SKIN);
+   try{surface.reskin(SWT.NONE);while(display.readAndDispatch()){}}finally{display.removeListener(SWT.Skin,cssDesigner);display.removeListener(SWT.Skin,CustomColors.SKIN);}
+   check(surface.getBackground().getRGB().equals(new RGB(0x33,0x55,0xAA)),"reskin pelo CSS: o fundo do designer volta antes da pintura");
+   CustomColors.refresh();
    check(tree.getBackground().equals(custom)&&readOnly.getBackground().equals(custom)&&custom.equals(CustomColors.background(tree)),"limite MPart: a cor da pilha ancestral não entra na árvore nem no texto da visão");
 
    // Remoção: a paleta volta a valer na mesma hora, mesmo antes da passagem de restauração.
@@ -153,7 +171,8 @@ public class CheckCustomColors {
    check(gradient(titled)!=null,"cor removida: CLabel recupera o degradê");
    check(paletteFill(canvas,display).equals(new RGB(255,255,255)),"cor removida: paleta Draw2D volta às cores próprias");
    check(bar.equals(section.getTitleBarBackground())&&bar.equals(section.getTitleBarGradientBackground())&&!check.getBackground().equals(custom),"cor removida: seção recupera a barra de título e a caixa de seleção perde a cor");
-   section.dispose();check.dispose();
+   check(!surface.getBackground().getRGB().equals(new RGB(0x33,0x55,0xAA))&&surface.getData("salutem.customColor")==null&&page.getBackgroundColor().getRGB().equals(new RGB(255,255,255)),"cor do designer removida: o canvas volta ao tema e a página continua igual");
+   section.dispose();check.dispose();editor.dispose();cssCanvas.dispose();pageText.dispose();
    for(Color c:new Color[]{themeText,top,bottom,bar})c.dispose();
    setPalette(startup,otherPalette,fg);
    visit.invoke(startup,part);
@@ -175,6 +194,10 @@ public class CheckCustomColors {
  /** Draw2D figure named like the GEF palette figures (the class name contains "palette"): opaque white. */
  public static class paletteFigure extends org.eclipse.draw2d.Figure {
   paletteFigure(){setOpaque(true);setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);}
+ }
+ /** Stand-in for the report page figure of the visual editor (same simple name as in Jaspersoft Studio). */
+ public static class ReportPageFigure extends org.eclipse.draw2d.Figure {
+  ReportPageFigure(){setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);}
  }
  /** Colour the canvas contents paint at one point, through the same Draw2D painting as on screen. */
  static RGB paletteFill(FigureCanvas canvas,Display display){

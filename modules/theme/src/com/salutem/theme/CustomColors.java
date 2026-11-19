@@ -37,6 +37,8 @@ public final class CustomColors {
  static final String NODE="com.salutem.jasper.theme.deepblue";
  static final String KEY="customColors";
  static final String EDITOR_AREA="org.eclipse.ui.editorss";
+ /** Stored id of the report designer surface (the area around the page in the visual editor). */
+ static final String DESIGNER="salutem.reportDesigner";
  /** Widget data key set by the E4 renderers (AbstractPartRenderer.OWNING_ME). */
  static final String OWNER="modelElement";
  /** Widget data: id of the block whose chosen colour this control carries. */
@@ -169,6 +171,12 @@ public final class CustomColors {
   */
  static void reapply(Control control){
   if(control.isDisposed())return;
+  // The report designer surface is its own target: never reached through the editor's blocks.
+  if(designer(control)){
+   RGB rgb=active().get(DESIGNER);
+   if(rgb!=null)apply(control,DESIGNER,color(control.getDisplay(),rgb));
+   return;
+  }
   for(Control c=control;c!=null;c=c.getParent()){
    Object marked=c.getData(PAINTED),owner=c.getData(OWNER);
    // A block root created just now (e.g. a view opened for the first time) has no mark yet.
@@ -250,10 +258,40 @@ public final class CustomColors {
   roots.sort(Comparator.comparingInt(r->depth((Control)r[0])));
   Set<Control> painted=Collections.newSetFromMap(new IdentityHashMap<>());
   for(Object[] r:roots)paint((Control)r[0],(String)r[1],color(display,(RGB)r[2]),(Control)r[0],painted);
+  RGB surface=active().get(DESIGNER);
+  if(surface!=null)for(Control canvas:designers())if(!canvas.isDisposed()){apply(canvas,DESIGNER,color(display,surface));painted.add(canvas);}
   // Blocks whose colour was removed go back to the theme.
   for(Shell shell:display.getShells())restore(shell,painted);
  }
  private static int depth(Control control){int depth=0;for(Control c=control;c!=null;c=c.getParent())depth++;return depth;}
+
+ /**
+  * Report designer surfaces: the Draw2D canvas of each visual report editor. The area around
+  * the page is this canvas's own background (the page figure is transparent outside the page
+  * and paints the page itself), so only the canvas background changes: no figure of the
+  * document is touched, and the preview (another control) is not a designer.
+  */
+ static boolean designer(Control control){
+  return control instanceof FigureCanvas && pageFigure(((FigureCanvas)control).getContents(),0);
+ }
+ private static boolean pageFigure(org.eclipse.draw2d.IFigure figure,int depth){
+  if(figure==null || depth>5)return false;
+  for(Class<?> type=figure.getClass();type!=null && type!=Object.class;type=type.getSuperclass())
+   if(type.getSimpleName().endsWith("PageFigure"))return true;
+  for(Object child:figure.getChildren())if(pageFigure((org.eclipse.draw2d.IFigure)child,depth+1))return true;
+  return false;
+ }
+ /** Designer surfaces of the open report editors, in every editor area. */
+ static List<Control> designers(){
+  List<Control> found=new ArrayList<>();
+  for(Control area:widgets(EDITOR_AREA))collectDesigners(area,found);
+  return found;
+ }
+ private static void collectDesigners(Control control,List<Control> found){
+  if(control.isDisposed())return;
+  if(designer(control)){if(!found.contains(control))found.add(control);return;}
+  if(control instanceof Composite)for(Control child:((Composite)control).getChildren())collectDesigners(child,found);
+ }
 
  /** Widgets of every model element with this id, in every workbench window. */
  static List<Control> widgets(String id){
@@ -277,6 +315,12 @@ public final class CustomColors {
   if(control instanceof Composite)for(Control child:((Composite)control).getChildren())paint(child,id,color,root,painted);
  }
  private static void apply(Control control,String id,Color color){
+  if(DESIGNER.equals(id)){
+   // Background only: the canvas foreground is inherited by figures of the document.
+   if(!color.equals(control.getBackground()))control.setBackground(color);
+   control.setData(PAINTED,id);MARKED.put(control,Boolean.TRUE);
+   return;
+  }
   // Before the plain background, which would drop the gradient without saving it.
   if(control instanceof CLabel)gradient((CLabel)control,color);
   if(!color.equals(control.getBackground()))control.setBackground(color);
@@ -481,6 +525,7 @@ public final class CustomColors {
    if(e instanceof MArea)return e;
   return null;
  }
+ static String designerLabel(){return text("Fundo do designer","Designer background");}
  static String label(MUIElement element){
   if(EDITOR_AREA.equals(element.getElementId()) || element instanceof MArea)return text("Área do editor","Editor area");
   if(element instanceof MUILabel){String label=((MUILabel)element).getLocalizedLabel();if(label!=null && !label.isBlank())return label;}

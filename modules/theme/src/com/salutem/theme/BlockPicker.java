@@ -19,7 +19,8 @@ final class BlockPicker {
  private final Shell outline;
  private final Listener move=this::moved,down=this::pressed,key=this::keyed;
  private final Cursor cross;
- private MUIElement block;private Control blockWidget;
+ /** Target under the mouse: stored id, readable label and the widget outlined. */
+ private String blockId,blockLabel;private Control blockWidget;
 
  private BlockPicker(Display display){
   this.display=display;
@@ -54,20 +55,26 @@ final class BlockPicker {
  private void pressed(Event event){
   event.doit=false;event.type=SWT.None;
   if(event.button!=1){end();return;}
-  MUIElement chosen=block;Control widget=blockWidget;
+  String id=blockId,label=blockLabel;Control widget=blockWidget;
   end();
-  if(chosen==null || widget==null || widget.isDisposed())return;
+  if(id==null || widget==null || widget.isDisposed())return;
   // Open the dialog after the mouse event has finished.
-  display.asyncExec(()->choose(chosen,widget));
+  display.asyncExec(()->choose(id,label,widget));
  }
 
  private void highlight(Control control){
   if(control.isDisposed())return;
-  MUIElement element=CustomColors.blockOf(control);
-  Control widget=element!=null && element.getWidget() instanceof Control?(Control)element.getWidget():null;
-  if(widget==null || widget.isDisposed() || !widget.isVisible()){outline.setVisible(false);block=null;blockWidget=null;return;}
+  String id=null,label=null;Control widget=null;
+  if(CustomColors.designer(control)){
+   // The surface around the report page is a target of its own, inside the editor area.
+   id=CustomColors.DESIGNER;label=CustomColors.designerLabel();widget=control;
+  }else{
+   MUIElement element=CustomColors.blockOf(control);
+   if(element!=null && element.getWidget() instanceof Control){id=element.getElementId();label=CustomColors.label(element);widget=(Control)element.getWidget();}
+  }
+  if(widget==null || widget.isDisposed() || !widget.isVisible()){outline.setVisible(false);blockId=null;blockLabel=null;blockWidget=null;return;}
   if(widget==blockWidget && outline.isVisible())return;
-  block=element;blockWidget=widget;
+  blockId=id;blockLabel=label;blockWidget=widget;
   Rectangle area=widget.getBounds();
   Rectangle bounds=display.map(widget.getParent(),null,area);
   Region frame=new Region(display);
@@ -80,11 +87,11 @@ final class BlockPicker {
   if(!outline.isVisible())outline.setVisible(true);
  }
 
- private static void choose(MUIElement element,Control widget){
+ private static void choose(String id,String label,Control widget){
   // Start from the colour already chosen for this block; the widget may show the theme colour.
-  RGB current=CustomColors.chosen(element.getElementId());
+  RGB current=CustomColors.chosen(id);
   RGB rgb=CustomColors.chooseColor(widget.getShell(),current!=null?current:widget.getBackground().getRGB());
   if(rgb==null)return;
-  CustomColors.put(element.getElementId(),CustomColors.label(element),rgb);
+  CustomColors.put(id,label,rgb);
  }
 }
