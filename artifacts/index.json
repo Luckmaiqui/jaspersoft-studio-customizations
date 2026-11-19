@@ -9,7 +9,7 @@
     "connectionOrder": "1.6.0",
     "translationFragments": "2.1.2"
   },
-  "sourceDigest": "6e41482b2fcb0386ee97f6b393d567ed1b531ab13db4bd25da1be13ff9ac976f",
+  "sourceDigest": "2c6af26e726e73a2b88a54fba5a141f49dc2bbe6bd816b7de44047a90ee7bb53",
   "files": [
     {
       "path": "artifacts/plugins/com.salutem.jasper.connectionorder_1.6.0.jar",
@@ -21,7 +21,7 @@
     },
     {
       "path": "artifacts/plugins/com.salutem.jasper.theme.deepblue_2.3.0.jar",
-      "sha256": "8c63198e7bdbcdb128ccc86dbec84cb9860f86c934cc7650364798da88ca1a25"
+      "sha256": "15907312d901483753f5958c807315fcfe0f164202a65f16c4e1a9d1aa85497f"
     },
     {
       "path": "artifacts/plugins/com.salutem.l10n.com.jaspersoft.studio.babel.editor.pt_BR_2.1.2.jar",

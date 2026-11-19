@@ -29,8 +29,10 @@ public final class CustomColorsPage extends PreferencePage implements IWorkbench
   page.setLayout(new GridLayout(2,false));
   table=new Table(page,SWT.BORDER|SWT.FULL_SELECTION|SWT.SINGLE);
   table.setHeaderVisible(true);
-  table.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true,1,5));
-  column(CustomColors.text("Bloco","Block"),260);column(CustomColors.text("Cor","Colour"),110);
+  // Small width hint: the table grows with the dialog but never pushes the buttons out of a narrow one.
+  GridData tableData=new GridData(SWT.FILL,SWT.FILL,true,true,1,5);tableData.widthHint=230;
+  table.setLayoutData(tableData);
+  column(CustomColors.text("Bloco","Block"),150);column(CustomColors.text("Cor","Colour"),80);
   pick(page,CustomColors.text("Escolher bloco na tela...","Pick a block on screen..."),this::pickOnScreen);
   change=pick(page,CustomColors.text("Alterar cor...","Change colour..."),this::changeColor);
   remove=pick(page,CustomColors.text("Remover","Remove"),this::removeSelected);
@@ -38,7 +40,8 @@ public final class CustomColorsPage extends PreferencePage implements IWorkbench
   hint.setText(CustomColors.text(
    "Também em Janela > Escolher cor de um bloco. Esc cancela a escolha.",
    "Also in Window > Pick a block colour. Esc cancels picking."));
-  hint.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,2,1));
+  GridData hintData=new GridData(SWT.FILL,SWT.TOP,true,false,2,1);hintData.widthHint=200;
+  hint.setLayoutData(hintData);
   table.addListener(SWT.Selection,e->buttons());
   table.addListener(SWT.DefaultSelection,e->changeColor());
   table.addListener(SWT.Dispose,e->disposeSwatches());

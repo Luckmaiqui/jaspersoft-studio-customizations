@@ -81,7 +81,9 @@ final class BlockPicker {
  }
 
  private static void choose(MUIElement element,Control widget){
-  RGB rgb=CustomColors.chooseColor(widget.getShell(),widget.getBackground().getRGB());
+  // Start from the colour already chosen for this block; the widget may show the theme colour.
+  RGB current=CustomColors.chosen(element.getElementId());
+  RGB rgb=CustomColors.chooseColor(widget.getShell(),current!=null?current:widget.getBackground().getRGB());
   if(rgb==null)return;
   CustomColors.put(element.getElementId(),CustomColors.label(element),rgb);
  }
